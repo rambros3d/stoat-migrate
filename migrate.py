@@ -178,6 +178,16 @@ class MigrationBot:
                             return True
                         else:
                             error_text = await resp.text()
+                            if resp.status == 429:
+                                try:
+                                    error_data = json.loads(error_text)
+                                    retry_after = error_data.get("retry_after", self.config['migration']['retry_delay'])
+                                    logger.warning(f"Rate limited! Waiting {retry_after} seconds...")
+                                    await asyncio.sleep(retry_after)
+                                    continue # Retry after waiting
+                                except:
+                                    pass
+                                    
                             if "MissingPermission" in error_text:
                                 logger.error(f"Stoat PERMISSION ERROR: Bot lacks 'SendMessage' permission in channel {self.config['stoat']['target_channel_id']}")
                                 logger.error(f"Response: {error_text}")
@@ -197,8 +207,10 @@ class MigrationBot:
         """Format message content including replies, forwards, and embeds"""
         parts = []
         
-        # 1. Handle Replies
-        if msg.reference and msg.reference.message_id:
+        # 1. Handle Replies (only if not a forward/snapshot)
+        snapshots = getattr(msg, 'message_snapshots', [])
+        
+        if msg.reference and msg.reference.message_id and not snapshots:
              ref_id = msg.reference.message_id
              reply_user = self.message_author_map.get(ref_id)
              if reply_user:
@@ -208,7 +220,7 @@ class MigrationBot:
 
         # 2. Handle Forwarded Messages (Snapshots)
         # Note: discord.py 2.6.4 might use 'message_snapshots' attribute
-        snapshots = getattr(msg, 'message_snapshots', [])
+        # snapshots = getattr(msg, 'message_snapshots', []) # Moved up
         if snapshots:
             for snapshot in snapshots:
                 # Snapshot is a MessageSnapshot object, usually containing a tuple (message, list of objects)
