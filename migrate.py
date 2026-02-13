@@ -279,6 +279,55 @@ class MigrationBot:
             
             logger.info(f"Found {len(messages)} messages. Starting migration...")
             
+            if messages:
+                # Get Stoat metadata
+                stoat_channel_name = "Unknown"
+                stoat_server_name = "Unknown"
+                try:
+                    async with aiohttp.ClientSession() as session:
+                        async with session.get(
+                            f"{self.stoat_api}/channels/{self.config['stoat']['target_channel_id']}",
+                            headers={"X-Bot-Token": self.config['stoat']['token']}
+                        ) as resp:
+                            if resp.status == 200:
+                                c_data = await resp.json()
+                                stoat_channel_name = c_data.get('name', 'Unknown')
+                                server_id = c_data.get('server')
+                                if server_id:
+                                    async with session.get(
+                                        f"{self.stoat_api}/servers/{server_id}",
+                                        headers={"X-Bot-Token": self.config['stoat']['token']}
+                                    ) as s_resp:
+                                        if s_resp.status == 200:
+                                            s_data = await s_resp.json()
+                                            stoat_server_name = s_data.get('name', 'Unknown')
+                except Exception as e:
+                    logger.warning(f"Failed to fetch Stoat metadata: {e}")
+
+                first_msg = messages[0]
+                logger.info(f"\n" + "="*60)
+                logger.info(f"MIGRATION PLAN OVERVIEW")
+                logger.info(f"="*60)
+                logger.info(f"SOURCE (Discord)")
+                logger.info(f"  Server:  {channel.guild.name}")
+                logger.info(f"  Channel: {channel.name}")
+                logger.info(f"")
+                logger.info(f"DESTINATION (Stoat)")
+                logger.info(f"  Server:  {stoat_server_name}")
+                logger.info(f"  Channel: {stoat_channel_name}")
+                logger.info(f"")
+                logger.info(f"FIRST MESSAGE TO MIGRATE")
+                logger.info(f"  Author:  {first_msg.author.name}")
+                logger.info(f"  Date:    {first_msg.created_at}")
+                logger.info(f"  Link:    {first_msg.jump_url}")
+                logger.info(f"="*60 + "\n")
+                
+                confirm = input("Would you like to proceed? (Y/N): ")
+                if confirm.lower() != 'y':
+                    logger.info("Migration cancelled by user.")
+                    await self.discord_client.close()
+                    return
+            
             if self.config['migration']['dry_run']:
                 logger.info("DRY RUN MODE - No messages will be posted to Stoat")
             
