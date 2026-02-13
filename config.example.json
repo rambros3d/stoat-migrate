@@ -1,0 +1,18 @@
+{
+    "discord": {
+        "token": "YOUR_DISCORD_BOT_TOKEN_HERE",
+        "source_channel_id": 1234567890123456789
+    },
+    "stoat": {
+        "api_url": "https://api.stoat.chat",
+        "token": "YOUR_STOAT_BOT_TOKEN_HERE",
+        "target_channel_id": "01XXXXXXXXXXXXXXXXXXXXXXXXX"
+    },
+    "migration": {
+        "rate_limit_delay": 0.1,
+        "retry_attempts": 3,
+        "retry_delay": 2,
+        "dry_run": false,
+        "upload_avatars": true
+    }
+}
