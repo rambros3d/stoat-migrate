@@ -151,10 +151,10 @@ class MigrationBot:
         
         return avatar_url  # Fallback to original URL
     
-    async def send_to_stoat(self, content: str, attachments: List[str] = None) -> bool:
+    async def send_to_stoat(self, content: str, attachments: List[str] = None, masquerade: dict = None) -> bool:
         """Send message to Stoat and retry logic"""
         if self.config['migration']['dry_run']:
-            logger.info(f"[DRY RUN] Would send: {content[:50]}...")
+            logger.info(f"[DRY RUN] Would send: {content[:50]}... (Masquerade: {masquerade})")
             return True
         
         payload = {
@@ -164,6 +164,10 @@ class MigrationBot:
         # Add attachments if any
         if attachments:
             payload["attachments"] = attachments
+            
+        # Add masquerade if provided
+        if masquerade:
+            payload["masquerade"] = masquerade
         
         # Retry logic
         for attempt in range(self.config['migration']['retry_attempts']):
@@ -353,13 +357,23 @@ class MigrationBot:
                     # Generate formatted content (handling forwards/embeds/replies)
                     formatted_body = self._format_message_content(msg)
                     
-                    # Simplified content format: **[Author]** ([Timestamp])\n[Content]
-                    content_header = f"**{author_name}** ({timestamp})"
-                    
-                    if formatted_body:
-                        content = f"{content_header}\n{formatted_body}"
+                    # Handle Masquerade
+                    masquerade = None
+                    if self.config['migration'].get('use_masquerade'):
+                        # Use Discord icon URL directly for masquerade (often more reliable)
+                        masquerade = {
+                            "name": author_name,
+                            "avatar": str(msg.author.display_avatar.url)
+                        }
+                        # When masquerading, we only send the formatted body (no header needed)
+                        content = formatted_body if formatted_body else "*(Clean message via migration)*"
                     else:
-                        content = f"{content_header}\n*(Clean message via migration)*" # Fallback if empty
+                        # Traditional format: **[Author]** ([Timestamp])\n[Content]
+                        content_header = f"**{author_name}** ({timestamp})"
+                        if formatted_body:
+                            content = f"{content_header}\n{formatted_body}"
+                        else:
+                            content = f"{content_header}\n*(Clean message via migration)*"
                     
                     # Handle attachments
                     stoat_attachments = []
@@ -375,7 +389,8 @@ class MigrationBot:
                     # Send to Stoat
                     success = await self.send_to_stoat(
                         content=content,
-                        attachments=stoat_attachments if stoat_attachments else None
+                        attachments=stoat_attachments if stoat_attachments else None,
+                        masquerade=masquerade
                     )
                     
                     if success:
