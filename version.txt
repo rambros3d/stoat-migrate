@@ -1,0 +1,4 @@
+Discord.py Version: 2.6.4
+Has snapshots: False
+Has message_snapshots: True
+Has reference: True

@@ -1,0 +1,1082 @@
+[
+  {
+    "id": 1471389613456097432,
+    "author": "rambros3d#0 (bot=False)",
+    "content": "https://odysee.com/@samtime:14/discord-reacts-to-adding-global-age:3",
+    "type": "MessageType.default",
+    "embeds": [
+      {
+        "thumbnail": {
+          "url": "https://thumbnails.odycdn.com/card/s:1280:720/quality:85/plain/https://thumbnails.lbry.com/3FMevJuM-nc",
+          "proxy_url": "https://images-ext-1.discordapp.net/external/6W_eayk3yiufZN6JtbLZw-oBYbRq4J_yHz5t9EX6QoM/https/thumbnails.odycdn.com/card/s%3A1280%3A720/quality%3A85/plain/https%3A/thumbnails.lbry.com/3FMevJuM-nc",
+          "width": 1280,
+          "height": 720,
+          "content_type": "image/jpeg",
+          "placeholder": "ExgKFIITP1K0WIdTWGiblq8GrA==",
+          "placeholder_version": 1,
+          "flags": 0
+        },
+        "provider": {
+          "name": "Odysee",
+          "url": "https://odysee.com/"
+        },
+        "author": {
+          "name": "SAMTIME",
+          "url": "https://odysee.com/@samtime:1"
+        },
+        "flags": 0,
+        "color": 13238347,
+        "timestamp": "2026-02-11T19:46:18+00:00",
+        "type": "article",
+        "description": "Discord is adding a feature no user ever asked for, global age verification!",
+        "url": "https://odysee.com/@samtime:14/discord-reacts-to-adding-global-age:3",
+        "title": "Discord Reacts to Adding Global Age Verification"
+      }
+    ],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=1024>"
+  },
+  {
+    "id": 1460687382729855193,
+    "author": "gant76#0 (bot=False)",
+    "content": "I'll give it a shot",
+    "type": "MessageType.reply",
+    "embeds": [],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1460275741282275422 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1460275741282275422,
+    "author": "rambros3d#0 (bot=False)",
+    "content": "mm, try cutting the axle a little short",
+    "type": "MessageType.reply",
+    "embeds": [],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1460272944931541214 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1460272944931541214,
+    "author": "gant76#0 (bot=False)",
+    "content": "In that case there may need to a specific version for metal axles. It was close but there just wasn't enough give to pop them in wothout the part snapping",
+    "type": "MessageType.reply",
+    "embeds": [],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1460242985865449482 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1460242985865449482,
+    "author": "rambros3d#0 (bot=False)",
+    "content": "yeah, usually petg is more flexible than pla",
+    "type": "MessageType.reply",
+    "embeds": [],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1460230161600348253 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1460230161600348253,
+    "author": "gant76#0 (bot=False)",
+    "content": "I'm not sure, I need PETG for it's UV resistance so I haven't tried pla, I can give it a go though",
+    "type": "MessageType.reply",
+    "embeds": [],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1460143411280482418 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1460143411280482418,
+    "author": "rambros3d#0 (bot=False)",
+    "content": "mm, I dont think petg should snap, does pla do the same?",
+    "type": "MessageType.reply",
+    "embeds": [],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1459533471574786162 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1460142898740727888,
+    "author": "rambros3d#0 (bot=False)",
+    "content": "Yeah",
+    "type": "MessageType.reply",
+    "embeds": [],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1458426264716181544 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1459925619193155604,
+    "author": "inviting_axolotl_81769#0 (bot=False)",
+    "content": "",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1459533471574786162,
+    "author": "gant76#0 (bot=False)",
+    "content": "Printed off the trucks in PETG, they snap becore they flex enough to accept the axles",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1459530856510259271,
+    "author": "lucwags#0 (bot=False)",
+    "content": "<@1011342499345879070>",
+    "type": "MessageType.reply",
+    "embeds": [],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1458426264716181544 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1459423164663861358,
+    "author": "gant76#0 (bot=False)",
+    "content": "?",
+    "type": "MessageType.reply",
+    "embeds": [],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1458426264716181544 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1458426264716181544,
+    "author": "gant76#0 (bot=False)",
+    "content": "The truck frame remains the same correct? The only specific files are for the wheels and axles?",
+    "type": "MessageType.reply",
+    "embeds": [],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1458021487452753924 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1458021487452753924,
+    "author": "rambros3d#0 (bot=False)",
+    "content": "You can use the 2mm rod version",
+    "type": "MessageType.reply",
+    "embeds": [],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1457822356582957159 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1457822356582957159,
+    "author": "gant76#0 (bot=False)",
+    "content": "Hey theres no easy way to stick metal axles in these trucks right?",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1457720181055815816,
+    "author": "gant76#0 (bot=False)",
+    "content": "Trucks look good though",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [
+      "https://cdn.discordapp.com/attachments/1284088728892997673/1457720181034975293/1767617769914.jpg?ex=699071b6&is=698f2036&hm=a439a6f8fd5c32843ec156b3b7eefd528f576cfe47066154a7609276e852b39a&"
+    ],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1457720106103865386,
+    "author": "gant76#0 (bot=False)",
+    "content": "I'll give it a shot!",
+    "type": "MessageType.reply",
+    "embeds": [],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1457640170021978238 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1457640170021978238,
+    "author": "rambros3d#0 (bot=False)",
+    "content": "Print them is sequence",
+    "type": "MessageType.reply",
+    "embeds": [],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1457472836104097813 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1457472878499856494,
+    "author": "gant76#0 (bot=False)",
+    "content": "I'm gonna clean it and try again",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1457472836104097813,
+    "author": "gant76#0 (bot=False)",
+    "content": "I didn't clean in-between prints. Originally the new plate took it like a champ.",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1457162628542759069,
+    "author": "gant76#0 (bot=False)",
+    "content": "",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [
+      "https://cdn.discordapp.com/attachments/1284088728892997673/1457162628185981093/20260103_185853.jpg?ex=699064b3&is=698f1333&hm=05bd92d38923b046f82a3b49e324a766bcd651c96e30a75115dedc6f7243b56b&"
+    ],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1456667447225614469,
+    "author": "gant76#0 (bot=False)",
+    "content": "Got a pair of frames printed while I was home",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1456368667888455710,
+    "author": "gant76#0 (bot=False)",
+    "content": "Not too keen on that one, goal here is quick and easy labor wise as I don't have much time for leisure",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1456366504462258351,
+    "author": "zaboo__#0 (bot=False)",
+    "content": "there is another way... split the model.",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1456366421629079582,
+    "author": "gant76#0 (bot=False)",
+    "content": "Planning on a second AMS for another engine, once I have that ill have the space to tinker with it",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1456366298392035489,
+    "author": "zaboo__#0 (bot=False)",
+    "content": "let us know how it works..",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1456366048902385806,
+    "author": "gant76#0 (bot=False)",
+    "content": "Or the purpose built support material",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1456366011237400577,
+    "author": "gant76#0 (bot=False)",
+    "content": "Yeah, I gotta play with that some",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1456346497678442600,
+    "author": "zaboo__#0 (bot=False)",
+    "content": "Just the time is an issue.",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1456346373246029959,
+    "author": "zaboo__#0 (bot=False)",
+    "content": "do it in PLA wont stock to PETG",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1456346246187843727,
+    "author": "gant76#0 (bot=False)",
+    "content": "Yep, question is is it worth it",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1456344518306828399,
+    "author": "zaboo__#0 (bot=False)",
+    "content": "i think You need supports",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1456344265725710409,
+    "author": "gant76#0 (bot=False)",
+    "content": "Top one has been cleaned up a bit, bottom is raw",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1456339806350213162,
+    "author": "gant76#0 (bot=False)",
+    "content": "Well I can say PETG did not like the ends of these cars",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [
+      "https://cdn.discordapp.com/attachments/1284088728892997673/1456339805880189069/rn_image_picker_lib_temp_e32fa0be-217e-4c6b-91c2-0b0f6be141e7.jpg?ex=6990b223&is=698f60a3&hm=3fa43bdaa2e3720c0af52fee22f29c2e77b09c76bd17163b69e436eea9dbf428&"
+    ],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1456055479871737928,
+    "author": "gant76#0 (bot=False)",
+    "content": "The holidays are alway hectic with us, lots of stop and go trying to balance keeping us home with the network not getting clogged up",
+    "type": "MessageType.reply",
+    "embeds": [],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1456040378154094760 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1456040378154094760,
+    "author": "nullrails#0 (bot=False)",
+    "content": "Man they sure keep you moving",
+    "type": "MessageType.reply",
+    "embeds": [],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1455991484007579730 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1455991484007579730,
+    "author": "gant76#0 (bot=False)",
+    "content": "Still away with work unfortunately \ud83d\ude43 hopefully I can get to it in a few days and get the frame printing",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1455918970334089463,
+    "author": "gant76#0 (bot=False)",
+    "content": "",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [
+      "https://cdn.discordapp.com/attachments/1284088728892997673/1455918970056998993/1767188486262.mp4?ex=69907bb4&is=698f2a34&hm=9bfbfc0939efae514e5ab7975693522be0d2da3fc0526f8cc547d3421cddfc54&"
+    ],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1455914248277463041,
+    "author": "gant76#0 (bot=False)",
+    "content": "Just about done!",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [
+      "https://cdn.discordapp.com/attachments/1284088728892997673/1455914248164343891/1767187357787.jpg?ex=6990774e&is=698f25ce&hm=a728ca174d4f20d69de6a6891a9b4d4e666102c5fa91327c20ab6b7f70ce0e68&"
+    ],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1455556452562501654,
+    "author": "gant76#0 (bot=False)",
+    "content": "Gonna definitely be an impressive car",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1455556383264080064,
+    "author": "gant76#0 (bot=False)",
+    "content": "27 hours left, all is well",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1455204893538390159,
+    "author": "gant76#0 (bot=False)",
+    "content": "",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [
+      "https://cdn.discordapp.com/attachments/1284088728892997673/1455204893269823500/1767018198988.jpg?ex=699085aa&is=698f342a&hm=2625bf40c18fa6a2756c3d67213802dda1854f0cd6c48d4dcbc2882ea366ddaa&"
+    ],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454882241988657255,
+    "author": "gant76#0 (bot=False)",
+    "content": "Maybe a nomination then a vote?",
+    "type": "MessageType.reply",
+    "embeds": [],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1454880869465456838 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454880869465456838,
+    "author": "rambros3d#0 (bot=False)",
+    "content": "Yeah friend, I am also thinking of some kind of voting system for new models",
+    "type": "MessageType.reply",
+    "embeds": [],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1454839315912724500 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454848614852595782,
+    "author": "gant76#0 (bot=False)",
+    "content": "They're supposed to be print waste cars. Unfortunately I'm making junk plastic faster than the stuff to drag the junk plastic around",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454848399835791533,
+    "author": "gant76#0 (bot=False)",
+    "content": "",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [
+      "https://cdn.discordapp.com/attachments/1284088728892997673/1454848399537868800/Screenshot_2025-08-10_203624-2.png?ex=69908b28&is=698f39a8&hm=bfefc20bf7d424c13cd0cbab9bbe6e8998386eaf6bb1b4592b1ffce1593bc8aa&"
+    ],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454847985501343887,
+    "author": "gant76#0 (bot=False)",
+    "content": "Yeah, honestly I'm not looking to put a bunch of work into these models, they're just a fun thing to tinker with",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454847840735203330,
+    "author": "killybirb#0 (bot=False)",
+    "content": "And if you weather the edges a bit it can look like realistic rust maybe?",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454847833382588498,
+    "author": "gant76#0 (bot=False)",
+    "content": "Yep",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454847742063939625,
+    "author": "killybirb#0 (bot=False)",
+    "content": "Those that dissolve in water or another kind?",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454847620961800427,
+    "author": "gant76#0 (bot=False)",
+    "content": "I'd like to get a couple more AMS systems so I can start using the purpose made support material, those rough edges are definitely noticeable",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454847366615011454,
+    "author": "killybirb#0 (bot=False)",
+    "content": "Dear Lord that does look amazing- I haven\u2019t done multicolour on mine yet, I have the H2S",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454847343772962918,
+    "author": "gant76#0 (bot=False)",
+    "content": "I was trained in autocad, but I'll be damned if I pay hundreds of dollars for a license",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454847230191210517,
+    "author": "nickalater#0 (bot=False)",
+    "content": "My goal for 2026 is learn how to model. DR needs some new rolling stock and locos.",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454847195399454833,
+    "author": "gant76#0 (bot=False)",
+    "content": "Thus far the results have been wonderful though",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [
+      "https://cdn.discordapp.com/attachments/1284088728892997673/1454847195147927684/20251225_170828.jpg?ex=69908a09&is=698f3889&hm=be2358f0f7bdb8f36c156ab0d12732d30bdd530ec009b39291ba5cc80566bdb1&"
+    ],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454847111324766372,
+    "author": "killybirb#0 (bot=False)",
+    "content": "I think you can turn the purging down in the settings and just and just rely on the tower",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454846986980167720,
+    "author": "gant76#0 (bot=False)",
+    "content": "Purge times that are longer than they need to be",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454846907720667228,
+    "author": "gant76#0 (bot=False)",
+    "content": "Yep. Multicolor, .2 mm nozzle",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454846798203064341,
+    "author": "killybirb#0 (bot=False)",
+    "content": "**83 HOURS FOR THAT- WHAT ARE Y-** oh it\u2019s a multicolour print",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454846614500933672,
+    "author": "killybirb#0 (bot=False)",
+    "content": "Bambulab spotted",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454846609895456992,
+    "author": "gant76#0 (bot=False)",
+    "content": "Wanted to give a longer print a shot",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454846513665671230,
+    "author": "gant76#0 (bot=False)",
+    "content": "",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [
+      "https://cdn.discordapp.com/attachments/1284088728892997673/1454846513250566271/Screenshot_20251228_094007_Bambu_Handy.jpg?ex=69908966&is=698f37e6&hm=b5e39f5ad7b135c82926a70aba2af762778ea349b65c05f8ad5a1ecdf9e9fcc1&"
+    ],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454846503691616299,
+    "author": "gant76#0 (bot=False)",
+    "content": "Yayyyy",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454846247675498741,
+    "author": "gant76#0 (bot=False)",
+    "content": "He's still got a lot on his plate",
+    "type": "MessageType.reply",
+    "embeds": [],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1454839315912724500 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454839315912724500,
+    "author": "zaboo__#0 (bot=False)",
+    "content": "<@1011342499345879070> Let's put it into vote to see the interest in the models.",
+    "type": "MessageType.reply",
+    "embeds": [],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1454835190642905240 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454835190642905240,
+    "author": "gant76#0 (bot=False)",
+    "content": "Agreed",
+    "type": "MessageType.reply",
+    "embeds": [],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1454604889282838599 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454604889282838599,
+    "author": "zaboo__#0 (bot=False)",
+    "content": "Straddle carrier and Container crane for DR as a suggestion to reach stacker.",
+    "type": "MessageType.reply",
+    "embeds": [],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1454514341842911263 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454515792329572457,
+    "author": "nickalater#0 (bot=False)",
+    "content": "Was just about to ask for that lol. That would be perfect for my intermodal yard",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454515398958518467,
+    "author": "lucwags#0 (bot=False)",
+    "content": "https://tenor.com/view/fast-cat-cat-excited-jumping-gif-5054843775616689213",
+    "type": "MessageType.reply",
+    "embeds": [
+      {
+        "thumbnail": {
+          "url": "https://media.tenor.com/RiZpodi6JD0AAAAe/fast-cat-cat-excited.png",
+          "proxy_url": "https://images-ext-1.discordapp.net/external/lS00a1Bx1s2yV9Nex9lmBMhWosO1rIV2Yn3oy5J-hYY/https/media.tenor.com/RiZpodi6JD0AAAAe/fast-cat-cat-excited.png",
+          "width": 498,
+          "height": 498,
+          "placeholder": "OQgKBwD4WJZ+dYiKdEmod4h4eUAoB4QC",
+          "placeholder_version": 1,
+          "flags": 0
+        },
+        "video": {
+          "url": "https://media.tenor.com/RiZpodi6JD0AAAPo/fast-cat-cat-excited.mp4",
+          "proxy_url": "https://images-ext-1.discordapp.net/external/pGrTNV9F32cLEdiUmf_x_xlf06-W4mBRHVJm50rykzw/https/media.tenor.com/RiZpodi6JD0AAAPo/fast-cat-cat-excited.mp4",
+          "width": 498,
+          "height": 498,
+          "placeholder": "OQgKBwD4WJZ+dYiKdEmod4h4eUAoB4QC",
+          "placeholder_version": 1,
+          "flags": 0
+        },
+        "provider": {
+          "name": "Tenor",
+          "url": "https://tenor.co"
+        },
+        "flags": 0,
+        "type": "gifv",
+        "url": "https://tenor.com/view/fast-cat-cat-excited-jumping-gif-5054843775616689213"
+      }
+    ],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1454515302711689246 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454515302711689246,
+    "author": "rambros3d#0 (bot=False)",
+    "content": "Yup!\nIf I am able to make it a fully functional model, I will defanitely do it",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454514564665442467,
+    "author": "lucwags#0 (bot=False)",
+    "content": "Does a reach stacker qualify",
+    "type": "MessageType.reply",
+    "embeds": [],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1454514341842911263 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454514341842911263,
+    "author": "rambros3d#0 (bot=False)",
+    "content": "hmm, I am more intrested in construction equipments and heavy vehicles so I will be making more of those \ud83d\ude42",
+    "type": "MessageType.reply",
+    "embeds": [],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1454493343181701342 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454493397997060266,
+    "author": "lucwags#0 (bot=False)",
+    "content": "To transfer containers from train to truck?",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454493343181701342,
+    "author": "lucwags#0 (bot=False)",
+    "content": "Are we also gonna get a gantry crane?",
+    "type": "MessageType.reply",
+    "embeds": [],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1454212878688321639 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454212878688321639,
+    "author": "rambros3d#0 (bot=False)",
+    "content": "Yup",
+    "type": "MessageType.reply",
+    "embeds": [],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1454210892060295340 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454210892060295340,
+    "author": "nickalater#0 (bot=False)",
+    "content": "Are the containers from the well car project compatible with the truck trailer?",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454210475171643606,
+    "author": "gant76#0 (bot=False)",
+    "content": "",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [
+      "https://cdn.discordapp.com/attachments/1284088728892997673/1454210475188555977/ws-for-sale.jpg?ex=6990334b&is=698ee1cb&hm=47795667149a75f1bd6dc9e3c21503104dcd68e7cc2e95b8ac1963ba51cb325c&"
+    ],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454210447304818889,
+    "author": "gant76#0 (bot=False)",
+    "content": "Personally I'd love a Western Star, but I may be in the minority",
+    "type": "MessageType.reply",
+    "embeds": [],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1454100421550538894 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454209839780728955,
+    "author": "gant76#0 (bot=False)",
+    "content": "A lot of trucks in America don't change much, you should have your pick",
+    "type": "MessageType.reply",
+    "embeds": [],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1454100421550538894 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454209745392107520,
+    "author": "gant76#0 (bot=False)",
+    "content": "Alright! All good",
+    "type": "MessageType.reply",
+    "embeds": [],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1453954429010055363 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1454100421550538894,
+    "author": "rambros3d#0 (bot=False)",
+    "content": "I have not decided yet, I will probably do the truck which has more reference",
+    "type": "MessageType.reply",
+    "embeds": [],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1452720333453791323 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1453954429010055363,
+    "author": "gant76#0 (bot=False)",
+    "content": "Trying another frame... Hopefully this one behaves",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1453881367984345275,
+    "author": "gant76#0 (bot=False)",
+    "content": "",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [
+      "https://cdn.discordapp.com/attachments/1284088728892997673/1453881367652991198/20251225_170828.jpg?ex=69905249&is=698f00c9&hm=e1ee229b8d98b443463078f61ba86cbb42bbbd87c2fd91bdce33940989a4caf6&"
+    ],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1452722324720582677,
+    "author": "conductoreli07#0 (bot=False)",
+    "content": "Or you you rather do classics like the Peterbilt 352 or the Kenworth K100",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1452720333453791323,
+    "author": "conductoreli07#0 (bot=False)",
+    "content": "Are you doing like a Kenworth W900 or a Peterbilt 379",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1452594078129848413,
+    "author": "rambros3d#0 (bot=False)",
+    "content": "American turcks are simple in design compared to european trucks, so it will take me less time to design those",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1452593676164403284,
+    "author": "rambros3d#0 (bot=False)",
+    "content": "yup, for sure!",
+    "type": "MessageType.reply",
+    "embeds": [],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1452422296399773769 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1452422296399773769,
+    "author": "gant76#0 (bot=False)",
+    "content": "Hey we need at least some American stuff lol!",
+    "type": "MessageType.reply",
+    "embeds": [],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1452361711603548181 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1452361711603548181,
+    "author": "rambros3d#0 (bot=False)",
+    "content": "Same goes for the trucks, There are more people into trucks in europe than in america",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1452361349534318647,
+    "author": "rambros3d#0 (bot=False)",
+    "content": "Yeah, I tought of asian trains, I didnt bother doing asian trains because the reference for trains are more for american trains than asian trains.\nAlso there are more train people in america than in asia",
+    "type": "MessageType.reply",
+    "embeds": [],
+    "attachments": [],
+    "reference": "<MessageReference message_id=1452308852715425983 channel_id=1284088728892997673 guild_id=1079333861013598258>",
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1452308852715425983,
+    "author": "lucwags#0 (bot=False)",
+    "content": "<@1011342499345879070> are we gonna get modern Europe trains+asian trains",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1451732553546469440,
+    "author": "gant76#0 (bot=False)",
+    "content": "",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [
+      "https://cdn.discordapp.com/attachments/1284088728892997673/1451732553223634985/rn_image_picker_lib_temp_80a3dee7-7f49-42ab-8f57-4277317bfe2d.jpg?ex=69906a0c&is=698f188c&hm=bc75d653e30c595841d9b68043ed0e4c90b3d18a56ae63c4afa473c3685617cb&"
+    ],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1451691402252783636,
+    "author": "gant76#0 (bot=False)",
+    "content": "Hour and 50 minutes left, I gotta go run out and buy a pair of flush cutters",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1451687256996712502,
+    "author": "conductoreli07#0 (bot=False)",
+    "content": "Id probably have to buy would have to buy some more Power torque motors to replace them",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1451676889281331385,
+    "author": "gant76#0 (bot=False)",
+    "content": "They spin but cant grab the wheels and make that squealing sounf",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1451676802551517236,
+    "author": "gant76#0 (bot=False)",
+    "content": "That occasionally happens on those older engines",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1451676756133019758,
+    "author": "gant76#0 (bot=False)",
+    "content": "Might be cracked gears",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1451676420366667949,
+    "author": "conductoreli07#0 (bot=False)",
+    "content": "Its not that its probably needing cleaning like do i need label 106 oil for my trains",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1451675231591596143,
+    "author": "lucwags#0 (bot=False)",
+    "content": "Gear grinding/misplacemet is my guess",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  },
+  {
+    "id": 1451675102751232072,
+    "author": "conductoreli07#0 (bot=False)",
+    "content": "Do i need oil to clean it out or what",
+    "type": "MessageType.default",
+    "embeds": [],
+    "attachments": [],
+    "reference": null,
+    "flags": "<MessageFlags value=0>"
+  }
+]

@@ -36,6 +36,7 @@ class MigrationBot:
         
         self.discord_client = discord.Client(intents=intents)
         self.avatar_cache = {}  # Cache uploaded avatars to avoid re-uploading
+        self.message_author_map = {}  # Cache author names for replies (msg_id -> author_name)
         
         # Setup Discord event handler
         @self.discord_client.event
@@ -192,6 +193,59 @@ class MigrationBot:
         logger.error(f"Failed to send message after {self.config['migration']['retry_attempts']} attempts")
         return False
     
+    def _format_message_content(self, msg: discord.Message) -> str:
+        """Format message content including replies, forwards, and embeds"""
+        parts = []
+        
+        # 1. Handle Replies
+        if msg.reference and msg.reference.message_id:
+             ref_id = msg.reference.message_id
+             reply_user = self.message_author_map.get(ref_id)
+             if reply_user:
+                 parts.append(f"> *Replying to {reply_user}*")
+             else:
+                 parts.append(f"> *Replying to a message*")
+
+        # 2. Handle Forwarded Messages (Snapshots)
+        # Note: discord.py 2.6.4 might use 'message_snapshots' attribute
+        snapshots = getattr(msg, 'message_snapshots', [])
+        if snapshots:
+            for snapshot in snapshots:
+                # Snapshot is a MessageSnapshot object, usually containing a tuple (message, list of objects)
+                # The structure can vary, but typically it behaves like a partial message
+                try:
+                    # Try to extract content from the snapshot
+                    # In some versions, snapshot might be a dict or object
+                    forwarded_content = getattr(snapshot, 'content', '')
+                    if forwarded_content:
+                        parts.append(f"> **Forwarded Message**:\n> {forwarded_content}")
+                    
+                    # Handle attachments in forwards (urls only for now)
+                    if hasattr(snapshot, 'attachments'):
+                         for att in snapshot.attachments:
+                             parts.append(f"> *Attachment: {att.url}*")
+                except Exception as e:
+                    logger.warning(f"Failed to process snapshot: {e}")
+
+        # 3. Handle Rich Embeds (User requested to suppress verbose description, just keep link)
+        if msg.embeds:
+            for embed in msg.embeds:
+                # If content exists, skip auto-generated embeds (link, video, etc) to avoid duplication
+                # This fixes the issue where youtube.com in content vs youtu.be in embed caused double links.
+                if (msg.clean_content or "").strip() and embed.type in ['link', 'video', 'article', 'image', 'gifv']:
+                    continue
+                
+                # If the embed has a URL and it's not already in the content, add it.
+                # This handles cases where a bot sends an embed with a link but no content.
+                if embed.url and embed.url not in (msg.clean_content or ""):
+                     parts.append(embed.url)
+
+        # 4. Main Content (using clean_content to resolve mentions like <@123>)
+        if msg.clean_content:
+            parts.append(msg.clean_content)
+            
+        return "\n".join(parts)
+
     async def run_migration(self):
         """Main migration logic"""
         try:
@@ -227,12 +281,19 @@ class MigrationBot:
                     timestamp = msg.created_at.strftime("%Y-%m-%d %H:%M:%S UTC")
                     author_name = msg.author.display_name or msg.author.name
                     
+                    # Store author name in cache for future replies
+                    self.message_author_map[msg.id] = author_name
+                    
+                    # Generate formatted content (handling forwards/embeds/replies)
+                    formatted_body = self._format_message_content(msg)
+                    
                     # Simplified content format: **[Author]** ([Timestamp])\n[Content]
                     content_header = f"**{author_name}** ({timestamp})"
-                    if msg.content:
-                        content = f"{content_header}\n{msg.content}"
+                    
+                    if formatted_body:
+                        content = f"{content_header}\n{formatted_body}"
                     else:
-                        content = content_header
+                        content = f"{content_header}\n*(Clean message via migration)*" # Fallback if empty
                     
                     # Handle attachments
                     stoat_attachments = []
