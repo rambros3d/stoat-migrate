@@ -1,0 +1,57 @@
+2026-02-14 05:13:27,184 - WARNING - PyNaCl is not installed, voice will NOT be supported
+[2026-02-14 05:13:27] [INFO    ] discord.client: logging in using static token
+2026-02-14 05:13:27,184 - INFO - logging in using static token
+[2026-02-14 05:13:28] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 2def12621ec5c272ad6c635401ba9c67).
+2026-02-14 05:13:28,905 - INFO - Shard ID None has connected to Gateway (Session ID: 2def12621ec5c272ad6c635401ba9c67).
+2026-02-14 05:13:31,032 - INFO - Logged in as stoat-migrate#5899
+2026-02-14 05:13:31,032 - INFO - Starting clone of server: RamBros Workshop
+2026-02-14 05:13:31,032 - INFO - 
+============================================================
+2026-02-14 05:13:31,032 - INFO - CLONING PLAN OVERVIEW
+2026-02-14 05:13:31,032 - INFO - ============================================================
+2026-02-14 05:13:31,032 - INFO - SOURCE (Discord):    RamBros Workshop
+2026-02-14 05:13:31,033 - INFO - DESTINATION (Stoat): 01KHCNK2S1XC10C1G79TZH5XB0
+2026-02-14 05:13:31,033 - INFO - Roles to clone:      9
+2026-02-14 05:13:31,033 - INFO - Categories:          5
+2026-02-14 05:13:31,033 - INFO - Text Channels:       20
+2026-02-14 05:13:31,033 - INFO - Voice Channels:      0
+2026-02-14 05:13:31,033 - INFO - ============================================================
+
+Would you like to proceed with cloning structure? (Y/N): 2026-02-14 05:13:34,651 - INFO - DRY RUN MODE ENABLED. Proceeding with plan verification...
+2026-02-14 05:13:34,651 - INFO - Cloning 9 roles...
+2026-02-14 05:13:34,651 - INFO - [DRY RUN] Would create role: stoat-migrate with color #000000
+2026-02-14 05:13:34,651 - INFO - [DRY RUN] Would create role: Server Booster with color #000000
+2026-02-14 05:13:34,651 - INFO - [DRY RUN] Would create role: X470 with color #000000
+2026-02-14 05:13:34,651 - INFO - [DRY RUN] Would create role: Backers with color #ff9830
+2026-02-14 05:13:34,651 - INFO - [DRY RUN] Would create role: Early Explorer with color #159aff
+2026-02-14 05:13:34,651 - INFO - [DRY RUN] Would create role: Early Pioneer with color #757fff
+2026-02-14 05:13:34,651 - INFO - [DRY RUN] Would create role: Buy Me a Coffee Bot with color #000000
+2026-02-14 05:13:34,651 - INFO - [DRY RUN] Would create role: Creator with color #2ecc71
+2026-02-14 05:13:34,651 - INFO - Cloning hierarchy (Categories and Channels)...
+2026-02-14 05:13:34,651 - INFO - Processing category: General
+2026-02-14 05:13:34,651 - INFO - [DRY RUN] Would create channel: announcements (Text) in category General
+2026-02-14 05:13:34,651 - INFO - [DRY RUN] Would create channel: get-started (Text) in category General
+2026-02-14 05:13:34,651 - INFO - [DRY RUN] Would create channel: welcome (Text) in category General
+2026-02-14 05:13:34,651 - INFO - [DRY RUN] Would create channel: general-discussion (Text) in category General
+2026-02-14 05:13:34,651 - INFO - [DRY RUN] Would create channel: member-exclusive (Text) in category General
+2026-02-14 05:13:34,651 - INFO - Processing category: Dragon Railway
+2026-02-14 05:13:34,651 - INFO - [DRY RUN] Would create channel: dragon-chat (Text) in category Dragon Railway
+2026-02-14 05:13:34,651 - INFO - [DRY RUN] Would create channel: dragon-scale-mods (Text) in category Dragon Railway
+2026-02-14 05:13:34,651 - INFO - [DRY RUN] Would create channel: dragon-electronics (Text) in category Dragon Railway
+2026-02-14 05:13:34,651 - INFO - [DRY RUN] Would create channel: dragon-makes-old (Text) in category Dragon Railway
+2026-02-14 05:13:34,651 - INFO - [DRY RUN] Would create channel: dragon-backer-club (Text) in category Dragon Railway
+2026-02-14 05:13:34,651 - INFO - Processing category: TWYN X470 Excavator
+2026-02-14 05:13:34,651 - INFO - [DRY RUN] Would create channel: x470-info (Text) in category TWYN X470 Excavator
+2026-02-14 05:13:34,651 - INFO - [DRY RUN] Would create channel: x470-discussion (Text) in category TWYN X470 Excavator
+2026-02-14 05:13:34,651 - INFO - Processing category: Playground
+2026-02-14 05:13:34,651 - INFO - [DRY RUN] Would create channel: more-models (Text) in category Playground
+2026-02-14 05:13:34,652 - INFO - [DRY RUN] Would create channel: interesting-projects (Text) in category Playground
+2026-02-14 05:13:34,652 - INFO - [DRY RUN] Would create channel: health-and-safety (Text) in category Playground
+2026-02-14 05:13:34,652 - INFO - [DRY RUN] Would create channel: off-topic (Text) in category Playground
+2026-02-14 05:13:34,652 - INFO - [DRY RUN] Would create channel: discord-age-test (Text) in category Playground
+2026-02-14 05:13:34,652 - INFO - Processing category: Private
+2026-02-14 05:13:34,652 - INFO - [DRY RUN] Would create channel: business-club (Text) in category Private
+2026-02-14 05:13:34,652 - INFO - [DRY RUN] Would create channel: the-insiders (Text) in category Private
+2026-02-14 05:13:34,652 - INFO - [DRY RUN] Would create channel: resources (Text) in category Private
+2026-02-14 05:13:34,652 - INFO - [DRY RUN] Would sync 5 categories with Stoat server.
+2026-02-14 05:13:34,652 - INFO - Cloning complete!

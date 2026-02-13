@@ -92,6 +92,19 @@ A one-time migration utility that transfers complete message history from Discor
 python migrate.py
 ```
 
+### 1. Clone Server Structure (Roles, Channels, Categories)
+If you want to mirror your Discord server structure (without messages), run:
+```bash
+./venv/bin/python clone.py
+```
+This will recreate your roles, categories, and channels on Stoat.
+
+### 2. Migrate Message History
+After the structure is set up, run the main migration script for individual channels:
+```bash
+./venv/bin/python migrate.py
+```
+
 ### Dry Run (Test Mode)
 
 Set `"dry_run": true` in `config.json` to test without posting:
