@@ -310,7 +310,13 @@ class MigrationEngine:
                 self.logger.info(f"Found {len(messages)} messages to migrate.")
                 total = len(messages)
                 
+                migrated_count = 0
+                first_message_link = None
+                
                 for idx, msg in enumerate(messages):
+                    if idx == 0:
+                        first_message_link = msg.jump_url
+                        
                     author_name = msg.author.display_name or msg.author.name
                     self.message_author_cache[msg.id] = author_name
                     
@@ -345,6 +351,7 @@ class MigrationEngine:
                         # Still emit progress in dry run
                         self.logger.info(f"PROGRESS:{idx+1}/{total}")
                         self.logger.info(f"[DRY RUN] Would migrate message from {author_name}")
+                        migrated_count += 1
                         continue
 
                     payload = {
@@ -355,7 +362,17 @@ class MigrationEngine:
                         payload["attachments"] = stoat_attachments
 
                     await self.stoat_request(stoat_token, "POST", f"/channels/{target_chan}/messages", payload)
+                    migrated_count += 1
                     self.logger.info(f"PROGRESS:{idx+1}/{total}")
+                
+                # Send summary message
+                if migrated_count > 0:
+                    summary_text = (
+                        f"[Discord Terminator](<https://github.com/rambros3d/discord-terminator>) "
+                        f"has migrated **{migrated_count}** messages from "
+                        f"#{channel.name} ([link](<{first_message_link}>))"
+                    )
+                    await self.stoat_request(stoat_token, "POST", f"/channels/{target_chan}/messages", {"content": summary_text})
                 
                 self.logger.info("Message migration finished.")
                 self.logger.info("TASK_COMPLETE")
