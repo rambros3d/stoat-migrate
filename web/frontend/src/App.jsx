@@ -165,36 +165,43 @@ const App = () => {
         </motion.div>
     );
 
-    const TabButton = ({ id, label, icon: Icon, color }) => (
-        <button
-            onClick={() => setActiveTab(id)}
-            className={`tab-btn ${activeTab === id ? 'active' : ''}`}
-            style={{
-                '--tab-color': color,
-                flex: 1,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                padding: '16px',
-                border: 'none',
-                background: 'none',
-                cursor: 'pointer',
-                fontSize: '0.9rem',
-                fontWeight: 600,
-                color: activeTab === id ? color : '#636e72',
-                borderBottom: `3px solid ${activeTab === id ? color : 'transparent'}`,
-                transition: 'all 0.3s ease'
-            }}
-        >
-            <Icon size={18} />
-            {label}
-            {((id === 'auth' && botInfos.discord && botInfos.stoat) ||
-                (id === 'server' && serverInfos.discord && serverInfos.stoat)) && (
-                    <CheckCircle2 size={14} color="#27ae60" />
-                )}
-        </button>
-    );
+    const TabButton = ({ id, label, icon: Icon, color }) => {
+        const isDisabled = (id === 'server' && (!botInfos.discord || !botInfos.stoat)) ||
+            (id === 'migration' && (!serverInfos.discord || !serverInfos.stoat));
+
+        return (
+            <button
+                onClick={() => !isDisabled && setActiveTab(id)}
+                className={`tab-btn ${activeTab === id ? 'active' : ''}`}
+                disabled={isDisabled}
+                style={{
+                    '--tab-color': color,
+                    flex: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    padding: '16px',
+                    border: 'none',
+                    background: 'none',
+                    cursor: isDisabled ? 'not-allowed' : 'pointer',
+                    fontSize: '0.9rem',
+                    fontWeight: 600,
+                    color: activeTab === id ? color : '#636e72',
+                    borderBottom: `3px solid ${activeTab === id ? color : 'transparent'}`,
+                    transition: 'all 0.3s ease',
+                    opacity: isDisabled ? 0.4 : 1
+                }}
+            >
+                <Icon size={18} />
+                {label}
+                {((id === 'auth' && botInfos.discord && botInfos.stoat) ||
+                    (id === 'server' && serverInfos.discord && serverInfos.stoat)) && (
+                        <CheckCircle2 size={14} color="#27ae60" />
+                    )}
+            </button>
+        );
+    };
 
     return (
         <div className="dashboard-container">

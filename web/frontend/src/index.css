@@ -116,6 +116,14 @@ input:focus {
   box-shadow: 0 5px 15px rgba(9, 132, 227, 0.3);
 }
 
+.btn:disabled {
+  background: #dfe4ea;
+  color: #a2a8b1;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
 .btn-danger {
   background: #fff;
   color: var(--danger);
