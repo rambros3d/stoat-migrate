@@ -205,7 +205,7 @@ const App = () => {
 
     return (
         <div className="dashboard-container">
-            <motion.h1 initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="title">Stoat Migrate Dashboard</motion.h1>
+            <motion.h1 initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="title">Discord Terminator</motion.h1>
 
             <div className="card glass" style={{ width: '100%', maxWidth: '800px', padding: 0, overflow: 'hidden', marginBottom: '20px' }}>
                 <div style={{ display: 'flex', borderBottom: '1px solid #edf2f7', background: 'rgba(255,255,255,0.5)' }}>
@@ -367,7 +367,7 @@ const App = () => {
 
             <button className="btn btn-danger" onClick={handleClearData} style={{ marginTop: '40px' }}><Trash2 size={16} /> Clear Saved Data</button>
             <div style={{ marginTop: '20px', color: '#b2bec3', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Github size={14} /> <span>v1.9.0 • stoat-migrate.org</span>
+                <Github size={14} /> <span>v1.9.0</span>
             </div>
         </div>
     );
