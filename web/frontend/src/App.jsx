@@ -62,6 +62,18 @@ const App = () => {
             if (config.target_server_id && config.stoat_token) fetchChannels('stoat');
         }
     }, [activeTab]);
+    // Auto-select target channel if name matches
+    useEffect(() => {
+        if (config.source_channel_id && channels.discord.length > 0 && channels.stoat.length > 0) {
+            const sourceChan = channels.discord.find(c => c.id === config.source_channel_id);
+            if (sourceChan) {
+                const match = channels.stoat.find(c => c.name.toLowerCase() === sourceChan.name.toLowerCase());
+                if (match && config.target_channel_id !== match.id) {
+                    setConfig(prev => ({ ...prev, target_channel_id: match.id }));
+                }
+            }
+        }
+    }, [config.source_channel_id, channels]);
 
     const fetchBotInfo = async (platform, token) => {
         try {
