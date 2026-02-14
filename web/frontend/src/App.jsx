@@ -264,6 +264,9 @@ const App = () => {
                         <Server size={22} color="#4a90e2" />
                         <h2 style={{ fontSize: '1.1rem' }}>2. Server Setup</h2>
                     </div>
+                    <p style={{ fontSize: '0.75rem', color: '#636e72', marginTop: '-15px', marginBottom: '20px', fontWeight: 500 }}>
+                        Paste a Server ID or a direct Channel/Server link
+                    </p>
 
                     {/* Source Server */}
                     <div className="form-group" style={{ minHeight: '80px' }}>
@@ -318,6 +321,9 @@ const App = () => {
                         <Hash size={22} color="#00cec9" />
                         <h2 style={{ fontSize: '1.1rem' }}>3. Channel Migration</h2>
                     </div>
+                    <p style={{ fontSize: '0.75rem', color: '#636e72', marginTop: '-15px', marginBottom: '20px', fontWeight: 500 }}>
+                        Paste a Channel ID or a direct Channel link
+                    </p>
                     <div className="form-group">
                         <label>Source Channel ID (Discord)</label>
                         <input

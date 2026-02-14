@@ -1,0 +1,27 @@
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0  221k    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+HTTP/2 200 
+date: Sat, 14 Feb 2026 00:59:37 GMT
+content-type: image/png
+content-length: 226370
+access-control-allow-origin: *
+access-control-expose-headers: x-ratelimit-limit,x-ratelimit-bucket,x-ratelimit-remaining,x-ratelimit-reset-after
+alt-svc: h3=":443"; ma=86400
+cache-control: public, max-age=2073600, must-revalidate
+content-disposition: attachment
+server: cloudflare
+vary: origin, access-control-request-method, access-control-request-headers
+x-ratelimit-bucket: 15042637077543455207
+x-ratelimit-limit: 4294967295
+x-ratelimit-remaining: 4294967293
+x-ratelimit-reset-after: 8998
+age: 5178
+accept-ranges: bytes
+cf-cache-status: HIT
+last-modified: Fri, 13 Feb 2026 23:33:19 GMT
+strict-transport-security: max-age=15552000; includeSubDomains
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=Pqke0DfI6gfBbxnSoGbnuqgDP313ZzfMn9uQNmeTtLmQQk3QZvLEED59XrwlmgCMgvV7nS9lDhScQYNI9lqMO9MDiBA3PR3QrSfV4REBs0ba4D6AHzKpC%2FS%2FxfVFufgxpoCXaw%3D%3D"}]}
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+cf-ray: 9cd89fb64aa71ae3-MAA
+

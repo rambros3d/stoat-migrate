@@ -90,13 +90,11 @@ async def get_stoat_bot_info(data: TokenInput):
                 avatar = user.get('avatar')
                 avatar_url = None
                 if avatar:
-                    # Correct CDN URL for Stoat
-                    avatar_url = f"https://cdn.stoatusercontent.com/attachments/{avatar['_id']}/{avatar['filename']}"
+                    tag = avatar.get('tag', 'attachments')
+                    avatar_url = f"https://cdn.stoatusercontent.com/{tag}/{avatar['_id']}/{avatar['filename']}"
                 return {"name": user['username'], "avatar": avatar_url}
             return {"error": "Invalid token"}
 
-            return {"error": "Invalid token"}
-            
 class ServerInfoInput(BaseModel):
     token: str
     server_id: str
@@ -123,7 +121,8 @@ async def get_stoat_server_info(data: ServerInfoInput):
                 icon = server.get('icon')
                 icon_url = None
                 if icon:
-                    icon_url = f"https://cdn.stoatusercontent.com/attachments/{icon['_id']}/{icon['filename']}"
+                    tag = icon.get('tag', 'attachments')
+                    icon_url = f"https://cdn.stoatusercontent.com/{tag}/{icon['_id']}/{icon['filename']}"
                 return {"name": server['name'], "icon": icon_url}
             return {"error": "Invalid server ID or token privileges"}
 
