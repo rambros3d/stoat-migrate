@@ -1,0 +1,122 @@
+from fastapi import FastAPI, BackgroundTasks, WebSocket, WebSocketDisconnect
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+import aiohttp
+import asyncio
+import uuid
+import time
+from typing import Optional, Dict, List
+from .engine import MigrationEngine
+
+app = FastAPI(title="Stoat Migrate API")
+
+# Enable CORS for frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+class MigrationConfig(BaseModel):
+    discord_token: str
+    stoat_token: str
+    source_server_id: int
+    target_server_id: str
+    source_channel_id: Optional[int] = None
+    target_channel_id: Optional[str] = None
+    dry_run: bool = True
+
+class CloneConfig(BaseModel):
+    discord_token: str
+    stoat_token: str
+    source_server_id: int
+    target_server_id: str
+    dry_run: bool = True
+
+# Store active log streams
+log_streams = {}
+
+async def run_engine_task(task_type: str, config: dict, task_id: str):
+    async def log_callback(msg: str):
+        if task_id in log_streams:
+            # We need to send to all connected clients for this task
+            # Use a copy of the set to avoid modification during iteration
+            for ws in list(log_streams[task_id]):
+                try:
+                    await ws.send_text(msg)
+                except:
+                    pass
+
+    engine = MigrationEngine({"dry_run": config.get('dry_run', True)}, log_callback)
+    
+    if task_type == "clone":
+        await engine.run_clone(
+            config['discord_token'], 
+            config['stoat_token'], 
+            config['source_server_id'], 
+            config['target_server_id']
+        )
+    elif task_type == "migrate":
+        await engine.run_migration(
+            config['discord_token'],
+            config['stoat_token'],
+            config['source_channel_id'],
+            config['target_channel_id']
+        )
+
+class TokenInput(BaseModel):
+    token: str
+
+@app.post("/api/bot-info/discord")
+async def get_discord_bot_info(data: TokenInput):
+    async with aiohttp.ClientSession() as session:
+        headers = {"Authorization": f"Bot {data.token}"}
+        async with session.get("https://discord.com/api/v10/users/@me", headers=headers) as resp:
+            if resp.status == 200:
+                user = await resp.json()
+                avatar_url = f"https://cdn.discordapp.com/avatars/{user['id']}/{user['avatar']}.png" if user.get('avatar') else None
+                return {"name": user['username'], "avatar": avatar_url}
+            return {"error": "Invalid token"}
+
+@app.post("/api/bot-info/stoat")
+async def get_stoat_bot_info(data: TokenInput):
+    async with aiohttp.ClientSession() as session:
+        headers = {"X-Bot-Token": data.token}
+        async with session.get("https://api.stoat.chat/users/@me", headers=headers) as resp:
+            if resp.status == 200:
+                user = await resp.json()
+                # Revolt uses an object for avatars
+                avatar = user.get('avatar')
+                avatar_url = None
+                if avatar:
+                    # Correct CDN URL for Stoat
+                    avatar_url = f"https://cdn.stoatusercontent.com/attachments/{avatar['_id']}/{avatar['filename']}"
+                return {"name": user['username'], "avatar": avatar_url}
+            return {"error": "Invalid token"}
+
+@app.post("/api/clone")
+async def start_clone(config: CloneConfig, background_tasks: BackgroundTasks):
+    task_id = f"clone_{int(time.time())}"
+    background_tasks.add_task(run_engine_task, "clone", config.dict(), task_id)
+    return {"task_id": task_id, "status": "started"}
+
+@app.post("/api/migrate")
+async def start_migrate(config: MigrationConfig, background_tasks: BackgroundTasks):
+    task_id = f"migrate_{int(time.time())}"
+    background_tasks.add_task(run_engine_task, "migrate", config.dict(), task_id)
+    return {"task_id": task_id, "status": "started"}
+
+@app.websocket("/ws/logs/{task_id}")
+async def websocket_endpoint(websocket: WebSocket, task_id: str):
+    await websocket.accept()
+    if task_id not in log_streams:
+        log_streams[task_id] = []
+    log_streams[task_id].append(websocket)
+    try:
+        while True:
+            # Just keep the connection alive, we don't expect input
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        if task_id in log_streams:
+            log_streams[task_id].remove(websocket)
