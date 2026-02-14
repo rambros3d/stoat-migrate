@@ -126,6 +126,32 @@ async def get_stoat_server_info(data: ServerInfoInput):
                 return {"name": server['name'], "icon": icon_url}
             return {"error": "Invalid server ID or token privileges"}
 
+class ServerChannelsInput(BaseModel):
+    token: str
+    server_id: str
+
+@app.post("/api/list-channels/discord")
+async def list_discord_channels(data: ServerChannelsInput):
+    async with aiohttp.ClientSession() as session:
+        headers = {"Authorization": f"Bot {data.token}"}
+        async with session.get(f"https://discord.com/api/v10/guilds/{data.server_id}/channels", headers=headers) as resp:
+            if resp.status == 200:
+                channels = await resp.json()
+                # Filter for text channels (type 0) and threads if applicable
+                return [{"id": c['id'], "name": c['name'], "type": c['type']} for c in channels if c['type'] in [0, 5]]
+            return {"error": "Failed to fetch Discord channels"}
+
+@app.post("/api/list-channels/stoat")
+async def list_stoat_channels(data: ServerChannelsInput):
+    async with aiohttp.ClientSession() as session:
+        headers = {"X-Bot-Token": data.token}
+        async with session.get(f"https://api.stoat.chat/servers/{data.server_id}/channels", headers=headers) as resp:
+            if resp.status == 200:
+                channels = await resp.json()
+                # Return text channels
+                return [{"id": c['id'], "name": c['name']} for c in channels if c.get('channel_type') == 'Text']
+            return {"error": "Failed to fetch Stoat channels"}
+
 @app.post("/api/clone")
 async def start_clone(config: CloneConfig, background_tasks: BackgroundTasks):
     task_id = f"clone_{int(time.time())}"

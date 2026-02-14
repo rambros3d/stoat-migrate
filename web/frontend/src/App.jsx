@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Server, MessageSquare, Terminal, Play, Trash2, Github, Edit3, Hash, CheckCircle2, ChevronRight } from 'lucide-react';
+import { Shield, Server, MessageSquare, Terminal, Play, Trash2, Github, Edit3, Hash, CheckCircle2, ChevronRight, ChevronDown } from 'lucide-react';
 import axios from 'axios';
 
 const App = () => {
@@ -23,6 +23,7 @@ const App = () => {
 
     const [botInfos, setBotInfos] = useState({ discord: null, stoat: null });
     const [serverInfos, setServerInfos] = useState({ discord: null, stoat: null });
+    const [channels, setChannels] = useState({ discord: [], stoat: [] });
 
     const [isEditingToken, setIsEditingToken] = useState({ discord: false, stoat: false });
     const [isEditingServer, setIsEditingServer] = useState({ discord: false, stoat: false });
@@ -46,6 +47,14 @@ const App = () => {
             fetchServerInfo('stoat', config.stoat_token, config.target_server_id);
         } else setServerInfos(prev => ({ ...prev, stoat: null }));
     }, [config.source_server_id, config.target_server_id, config.discord_token, config.stoat_token]);
+
+    // Fetch channels when migration tab becomes active
+    useEffect(() => {
+        if (activeTab === 'migration') {
+            if (config.source_server_id && config.discord_token) fetchChannels('discord');
+            if (config.target_server_id && config.stoat_token) fetchChannels('stoat');
+        }
+    }, [activeTab]);
 
     const fetchBotInfo = async (platform, token) => {
         try {
@@ -74,6 +83,19 @@ const App = () => {
             }
         } catch (err) {
             console.error(`Error fetching ${platform} server info:`, err);
+        }
+    };
+
+    const fetchChannels = async (platform) => {
+        try {
+            const token = platform === 'discord' ? config.discord_token : config.stoat_token;
+            const serverId = platform === 'discord' ? config.source_server_id : config.target_server_id;
+            const res = await axios.post(`/api/list-channels/${platform}`, { token, server_id: serverId });
+            if (Array.isArray(res.data)) {
+                setChannels(prev => ({ ...prev, [platform]: res.data }));
+            }
+        } catch (err) {
+            console.error(`Error fetching ${platform} channels:`, err);
         }
     };
 
@@ -311,15 +333,51 @@ const App = () => {
                                     <Hash size={22} color="#00cec9" />
                                     <h2 style={{ fontSize: '1.2rem' }}>Migration Control</h2>
                                 </div>
-                                <p style={{ fontSize: '0.8rem', color: '#636e72', marginBottom: '25px' }}>Configure channel mapping and start synchronization</p>
+                                <p style={{ fontSize: '0.8rem', color: '#636e72', marginBottom: '25px' }}>Select channels or paste IDs to start synchronization</p>
 
                                 <div className="form-group">
                                     <label>Source Channel (Discord)</label>
-                                    <input type="text" placeholder="13285..." value={config.source_channel_id} onChange={(e) => setConfig({ ...config, source_channel_id: extractId(e.target.value, 'discord', 'channel') })} />
+                                    <div style={{ display: 'flex', gap: '10px' }}>
+                                        <input
+                                            type="text"
+                                            placeholder="Channel ID"
+                                            value={config.source_channel_id}
+                                            onChange={(e) => setConfig({ ...config, source_channel_id: extractId(e.target.value, 'discord', 'channel') })}
+                                            style={{ flex: 1 }}
+                                        />
+                                        {channels.discord.length > 0 && (
+                                            <select
+                                                style={{ width: '150px', borderRadius: '10px', border: '2px solid #edf2f7', padding: '0 10px' }}
+                                                value={config.source_channel_id}
+                                                onChange={(e) => setConfig({ ...config, source_channel_id: e.target.value })}
+                                            >
+                                                <option value="">Quick Select</option>
+                                                {channels.discord.map(c => <option key={c.id} value={c.id}>#{c.name}</option>)}
+                                            </select>
+                                        )}
+                                    </div>
                                 </div>
                                 <div className="form-group">
                                     <label>Target Channel (Stoat)</label>
-                                    <input type="text" placeholder="01KHC..." value={config.target_channel_id} onChange={(e) => setConfig({ ...config, target_channel_id: extractId(e.target.value, 'stoat', 'channel') })} />
+                                    <div style={{ display: 'flex', gap: '10px' }}>
+                                        <input
+                                            type="text"
+                                            placeholder="Channel ID"
+                                            value={config.target_channel_id}
+                                            onChange={(e) => setConfig({ ...config, target_channel_id: extractId(e.target.value, 'stoat', 'channel') })}
+                                            style={{ flex: 1 }}
+                                        />
+                                        {channels.stoat.length > 0 && (
+                                            <select
+                                                style={{ width: '150px', borderRadius: '10px', border: '2px solid #edf2f7', padding: '0 10px' }}
+                                                value={config.target_channel_id}
+                                                onChange={(e) => setConfig({ ...config, target_channel_id: e.target.value })}
+                                            >
+                                                <option value="">Quick Select</option>
+                                                {channels.stoat.map(c => <option key={c.id} value={c.id}>#{c.name}</option>)}
+                                            </select>
+                                        )}
+                                    </div>
                                 </div>
 
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
@@ -367,7 +425,7 @@ const App = () => {
 
             <button className="btn btn-danger" onClick={handleClearData} style={{ marginTop: '40px' }}><Trash2 size={16} /> Clear Saved Data</button>
             <div style={{ marginTop: '20px', color: '#b2bec3', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Github size={14} /> <span>v1.9.0</span>
+                <Github size={14} /> <span>v2.0.0</span>
             </div>
         </div>
     );
