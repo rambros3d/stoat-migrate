@@ -1,0 +1,37 @@
+# Stoat Migration Tool (Discord Terminator) - LLM Context
+
+This file provides context for LLMs working on this repository.
+
+## Project Overview
+Discord Terminator is a specialized migration tool designed to clone Discord server structures (roles, categories, channels) and migrate message history (including attachments, rich formatting, and masqueraded identities) to Stoat (a chat platform based on Revolt).
+
+## Tech Stack
+- **Backend**: FastAPI (Python 3.10+)
+- **Frontend**: React (Vite, Tailwind-ish vanilla CSS)
+- **Discord Integration**: `discord.py`
+- **Stoat Integration**: Direct REST API calls via `aiohttp`
+
+## Key Modules
+- `web/backend/main.py`: FastAPI entry point, handles configuration, status, and initiates background engine tasks.
+- `web/backend/engine.py`: The core migration logic. Handles Discord client login, history fetching, and Stoat API interactions.
+- `web/frontend/src/App.jsx`: The single-page wizard UI.
+
+## Important Architectural Patterns
+1. **Engine Tasks**: Migration and Cloning are long-running background tasks managed by `engine.py`. They emit status updates to a dedicated log file (`logs/<task_id>.log`).
+2. **WebSocket Logs**: The frontend connects to `/ws/logs/<task_id>` to receive real-time updates from the engine.
+3. **Stoat API Specifics**: 
+   - Uses `X-Bot-Token` header for authentication.
+   - Channel discovery requires fetching the server object first to get channel IDs, then fetching individual channels.
+   - Core ID field is `_id` (not `id`).
+   - Text channels have `channel_type: "TextChannel"`.
+
+## Common Pitfalls
+- **Stoat CDN**: Attachments must be uploaded to the Autumn CDN (`https://cdn.stoatusercontent.com`) before being referenced in message payloads.
+- **Masquerade**: Stoat supports "masquerading" (sending messages as a specific name/avatar). The tool uses this to preserve Discord identities.
+- **Rate Limits**: Both Discord and Stoat have strict rate limits. The engine includes delay logic and handles 429 errors.
+- **Timestamps**: User requested timestamps to be included in the masquerade name for better visibility: `Name (YYYY-MM-DD HH:MM:SS UTC)`.
+
+## Workspace Structure
+- `web/backend/`: Python server and migration engine.
+- `web/frontend/`: React frontend.
+- `migrate.py`: Standalone CLI version of the migration tool (deprecated in favor of WebUI but useful for reference).

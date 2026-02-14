@@ -211,16 +211,35 @@ async def get_discord_channel_preview(data: ChannelPreviewInput):
 async def list_stoat_channels(data: ServerChannelsInput):
     async with aiohttp.ClientSession() as session:
         headers = {"X-Bot-Token": data.token}
-        async with session.get(f"https://api.stoat.chat/servers/{data.server_id}/channels", headers=headers) as resp:
+        
+        # 1. Fetch the server to get the list of channel IDs (Revolt/Stoat pattern)
+        async with session.get(f"https://api.stoat.chat/servers/{data.server_id}", headers=headers) as resp:
             if resp.status == 200:
-                channels = await resp.json()
-                if not isinstance(channels, list):
-                    print(f"[STOAT] Error: Channels response is not a list: {channels}")
-                    return []
-                filtered = [{"id": c['id'], "name": c['name']} for c in channels if str(c.get('channel_type', '')).lower() == 'text']
-                print(f"[STOAT] Found {len(filtered)} text channels out of {len(channels)} total.")
+                server_data = await resp.json()
+                channel_ids = server_data.get('channels', [])
+                
+                # 2. Fetch details for each channel in parallel
+                async def fetch_channel_info(cid):
+                    async with session.get(f"https://api.stoat.chat/channels/{cid}", headers=headers) as cresp:
+                        if cresp.status == 200:
+                            return await cresp.json()
+                        return None
+                
+                results = await asyncio.gather(*[fetch_channel_info(cid) for cid in channel_ids])
+                
+                # 3. Filter for TextChannels and extract name/_id
+                filtered = []
+                for c in results:
+                    if c and c.get('channel_type') == 'TextChannel':
+                        filtered.append({
+                            "id": c.get('_id'), 
+                            "name": c.get('name', 'Unknown')
+                        })
+                
+                print(f"[STOAT] Found {len(filtered)} text channels out of {len(channel_ids)} total server channels.")
                 return filtered
-            print(f"[STOAT] API Error {resp.status} fetching channels for {data.server_id}")
+            
+            print(f"[STOAT] API Error {resp.status} fetching server {data.server_id}")
             return {"error": f"Stoat API Error {resp.status}"}
 
 @app.post("/api/clone")

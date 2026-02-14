@@ -310,8 +310,9 @@ class MigrationEngine:
                             if file_id:
                                 stoat_attachments.append(file_id)
                     
-                    # Masquerade
-                    masquerade = {"name": author_name, "avatar": str(msg.author.display_avatar.url)}
+                    # Generate timestamp for masquerade
+                    timestamp = msg.created_at.strftime("%Y-%m-%d %H:%M:%S UTC")
+                    masquerade = {"name": f"{author_name} ({timestamp})", "avatar": str(msg.author.display_avatar.url)}
                     
                     if self.config.get('dry_run'):
                         # Still emit progress in dry run
