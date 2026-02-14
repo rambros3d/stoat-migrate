@@ -231,7 +231,7 @@ const App = () => {
                 fetchChannels('stoat');
             }
 
-            const endpoint = '/api/migrate';
+            const endpoint = `/api/${type}`;
             const res = await axios.post(endpoint, finalConfig);
             setTaskId(res.data.task_id);
             connectWebSocket(res.data.task_id);
@@ -407,7 +407,15 @@ const App = () => {
                                     </AnimatePresence>
                                 </div>
 
-                                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px', gap: '12px' }}>
+                                    <button
+                                        className="btn btn-secondary"
+                                        onClick={() => handleRun('clone')}
+                                        disabled={status === 'running' || !serverInfos.discord || !serverInfos.stoat}
+                                        style={{ width: 'auto', padding: '10px 25px', background: '#a29bfe', color: '#fff' }}
+                                    >
+                                        <Server size={18} /> Clone Structure
+                                    </button>
                                     <button
                                         className="btn btn-primary"
                                         onClick={() => setActiveTab('migration')}

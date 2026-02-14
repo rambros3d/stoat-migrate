@@ -171,9 +171,23 @@ class MigrationEngine:
     async def get_existing_structure(self, token: str, server_id: str):
         server = await self.stoat_request(token, "GET", f"/servers/{server_id}")
         if not server: return {}, {}
-        roles = {r['name'].lower(): id for id, r in server.get('roles', {}).items()}
-        channels_res = await self.stoat_request(token, "GET", f"/servers/{server_id}/channels")
-        channels = {c['name'].lower(): c['_id'] for c in channels_res} if channels_res else {}
+        
+        # Roles are indexed by ID in the server object
+        roles = {r['name'].lower(): rid for rid, r in server.get('roles', {}).items()}
+        
+        # Channels list in server object only contains IDs
+        channel_ids = server.get('channels', [])
+        channels = {}
+        
+        # Fetch channel details in parallel
+        async def fetch_chan(cid):
+            return await self.stoat_request(token, "GET", f"/channels/{cid}")
+            
+        results = await asyncio.gather(*[fetch_chan(cid) for cid in channel_ids])
+        for c in results:
+            if c and 'name' in c:
+                channels[c['name'].lower()] = c['_id']
+                
         return roles, channels
 
     async def run_clone(self, discord_token: str, stoat_token: str, source_id: int, target_id: str):
