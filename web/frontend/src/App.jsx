@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Server, MessageSquare, Terminal, Play, Trash2, Github, Edit3, Hash } from 'lucide-react';
+import { Shield, Server, MessageSquare, Terminal, Play, Trash2, Github, Edit3, Hash, CheckCircle2 } from 'lucide-react';
 import axios from 'axios';
 
 const App = () => {
@@ -19,12 +19,17 @@ const App = () => {
     const [status, setStatus] = useState('idle'); // idle, running, success, error
     const [taskId, setTaskId] = useState(null);
     const [logs, setLogs] = useState([]);
+
     const [botInfos, setBotInfos] = useState({ discord: null, stoat: null });
-    const [isEditing, setIsEditing] = useState({ discord: false, stoat: false });
+    const [serverInfos, setServerInfos] = useState({ discord: null, stoat: null });
+
+    const [isEditingToken, setIsEditingToken] = useState({ discord: false, stoat: false });
+    const [isEditingServer, setIsEditingServer] = useState({ discord: false, stoat: false });
+
     const logEndRef = useRef(null);
 
+    // Bot Info Effect
     useEffect(() => {
-        // Auto-fetch bot info if tokens look valid
         if (config.discord_token.length > 50) fetchBotInfo('discord', config.discord_token);
         else setBotInfos(prev => ({ ...prev, discord: null }));
 
@@ -32,18 +37,44 @@ const App = () => {
         else setBotInfos(prev => ({ ...prev, stoat: null }));
     }, [config.discord_token, config.stoat_token]);
 
+    // Server Info Effect
+    useEffect(() => {
+        if (config.source_server_id && config.discord_token) {
+            fetchServerInfo('discord', config.discord_token, config.source_server_id);
+        } else setServerInfos(prev => ({ ...prev, discord: null }));
+
+        if (config.target_server_id && config.stoat_token) {
+            fetchServerInfo('stoat', config.stoat_token, config.target_server_id);
+        } else setServerInfos(prev => ({ ...prev, stoat: null }));
+    }, [config.source_server_id, config.target_server_id, config.discord_token, config.stoat_token]);
+
     const fetchBotInfo = async (platform, token) => {
         try {
             const res = await axios.post(`/api/bot-info/${platform}`, { token });
             if (!res.data.error) {
                 setBotInfos(prev => ({ ...prev, [platform]: res.data }));
-                setIsEditing(prev => ({ ...prev, [platform]: false }));
+                setIsEditingToken(prev => ({ ...prev, [platform]: false }));
             } else {
                 setBotInfos(prev => ({ ...prev, [platform]: null }));
-                setIsEditing(prev => ({ ...prev, [platform]: true }));
+                setIsEditingToken(prev => ({ ...prev, [platform]: true }));
             }
         } catch (err) {
             console.error(`Error fetching ${platform} bot info:`, err);
+        }
+    };
+
+    const fetchServerInfo = async (platform, token, serverId) => {
+        try {
+            const res = await axios.post(`/api/server-info/${platform}`, { token, server_id: serverId });
+            if (!res.data.error) {
+                setServerInfos(prev => ({ ...prev, [platform]: res.data }));
+                setIsEditingServer(prev => ({ ...prev, [platform]: false }));
+            } else {
+                setServerInfos(prev => ({ ...prev, [platform]: null }));
+                setIsEditingServer(prev => ({ ...prev, [platform]: true }));
+            }
+        } catch (err) {
+            console.error(`Error fetching ${platform} server info:`, err);
         }
     };
 
@@ -58,7 +89,7 @@ const App = () => {
     }, [logs]);
 
     const handleClearData = () => {
-        if (window.confirm("Are you sure you want to clear all saved tokens and configuration? This cannot be undone.")) {
+        if (window.confirm("Are you sure you want to clear all saved data? This cannot be undone.")) {
             localStorage.removeItem('stoat_migrate_config');
             setConfig({
                 discord_token: '',
@@ -70,7 +101,9 @@ const App = () => {
                 dry_run: true
             });
             setBotInfos({ discord: null, stoat: null });
-            setIsEditing({ discord: true, stoat: true });
+            setServerInfos({ discord: null, stoat: null });
+            setIsEditingToken({ discord: true, stoat: true });
+            setIsEditingServer({ discord: true, stoat: true });
             setLogs(['Data cleared.']);
         }
     };
@@ -97,87 +130,56 @@ const App = () => {
         }
     };
 
-    const TokenInput = ({ platform, label, placeholder }) => {
-        const hasInfo = botInfos[platform];
-        const editing = isEditing[platform] || !hasInfo;
-
-        return (
-            <div className="form-group" style={{ minHeight: '80px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                    <label style={{ margin: 0 }}>{label}</label>
-                    {hasInfo && !editing && (
-                        <button
-                            onClick={() => setIsEditing({ ...isEditing, [platform]: true })}
-                            style={{
-                                background: 'rgba(74, 144, 226, 0.1)',
-                                border: 'none',
-                                color: '#4a90e2',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '6px',
-                                fontSize: '0.75rem',
-                                padding: '4px 10px',
-                                borderRadius: '6px',
-                                fontWeight: 600
-                            }}
-                        >
-                            <Edit3 size={12} /> Change Token
-                        </button>
-                    )}
-                </div>
-
-                <AnimatePresence mode="wait">
-                    {editing ? (
-                        <motion.div
-                            key="input"
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: 10 }}
-                        >
-                            <input
-                                type="password"
-                                placeholder={placeholder}
-                                value={config[`${platform}_token`]}
-                                onChange={(e) => setConfig({ ...config, [`${platform}_token`]: e.target.value })}
-                            />
-                        </motion.div>
-                    ) : (
-                        <motion.div
-                            key="badge"
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '12px',
-                                background: '#f8f9fa',
-                                padding: '12px 16px',
-                                borderRadius: '10px',
-                                border: '2px solid #edf2f7'
-                            }}
-                        >
-                            <div style={{ position: 'relative' }}>
-                                {hasInfo.avatar ? (
-                                    <img src={hasInfo.avatar} style={{ width: '32px', height: '32px', borderRadius: '50%', border: '2px solid #fff', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }} alt="bot" />
-                                ) : (
-                                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#4a90e2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1rem', fontWeight: 'bold' }}>
-                                        {hasInfo.name[0].toUpperCase()}
-                                    </div>
-                                )}
-                                <div style={{ position: 'absolute', bottom: '-2px', right: '-2px', width: '10px', height: '10px', background: '#27ae60', borderRadius: '50%', border: '2px solid #fff' }}></div>
-                            </div>
-                            <div>
-                                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#2d3436' }}>{hasInfo.name}</div>
-                                <div style={{ fontSize: '0.7rem', color: '#636e72', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Logged in as {platform} bot</div>
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+    const IdentityBadge = ({ info, platform, type, onEdit }) => (
+        <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                background: '#f8f9fa',
+                padding: '12px 16px',
+                borderRadius: '10px',
+                border: '2px solid #edf2f7',
+                marginBottom: '10px'
+            }}
+        >
+            <div style={{ position: 'relative' }}>
+                {(info.avatar || info.icon) ? (
+                    <img src={info.avatar || info.icon} style={{ width: '32px', height: '32px', borderRadius: '50%', border: '2px solid #fff', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }} alt="identity" />
+                ) : (
+                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#4a90e2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1rem', fontWeight: 'bold' }}>
+                        {info.name[0].toUpperCase()}
+                    </div>
+                )}
+                <div style={{ position: 'absolute', bottom: '-2px', right: '-2px', width: '10px', height: '10px', background: '#27ae60', borderRadius: '50%', border: '2px solid #fff' }}></div>
             </div>
-        );
-    };
+            <div style={{ flex: 1 }}>
+                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#2d3436' }}>{info.name}</div>
+                <div style={{ fontSize: '0.7rem', color: '#636e72', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{platform} {type}</div>
+            </div>
+            <button
+                onClick={onEdit}
+                style={{
+                    background: 'rgba(74, 144, 226, 0.1)',
+                    border: 'none',
+                    color: '#4a90e2',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    fontSize: '0.7rem',
+                    padding: '4px 8px',
+                    borderRadius: '6px',
+                    fontWeight: 600
+                }}
+            >
+                <Edit3 size={12} /> Change
+            </button>
+        </motion.div>
+    );
 
     return (
         <div className="dashboard-container">
@@ -196,8 +198,44 @@ const App = () => {
                         <Shield size={22} color="#4a90e2" />
                         <h2 style={{ fontSize: '1.1rem' }}>1. Authentication</h2>
                     </div>
-                    <TokenInput platform="discord" label="Discord Bot Token" placeholder="MTEyM..." />
-                    <TokenInput platform="stoat" label="Stoat Bot Token" placeholder="je89..." />
+
+                    {/* Discord Bot */}
+                    <div className="form-group" style={{ minHeight: '80px' }}>
+                        <label>Discord Bot Token</label>
+                        <AnimatePresence mode="wait">
+                            {(isEditingToken.discord || !botInfos.discord) ? (
+                                <motion.div key="input" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                                    <input
+                                        type="password"
+                                        placeholder="MTEyM..."
+                                        value={config.discord_token}
+                                        onChange={(e) => setConfig({ ...config, discord_token: e.target.value })}
+                                    />
+                                </motion.div>
+                            ) : (
+                                <IdentityBadge info={botInfos.discord} platform="Discord" type="Bot" onEdit={() => setIsEditingToken({ ...isEditingToken, discord: true })} />
+                            )}
+                        </AnimatePresence>
+                    </div>
+
+                    {/* Stoat Bot */}
+                    <div className="form-group" style={{ minHeight: '80px' }}>
+                        <label>Stoat Bot Token</label>
+                        <AnimatePresence mode="wait">
+                            {(isEditingToken.stoat || !botInfos.stoat) ? (
+                                <motion.div key="input" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                                    <input
+                                        type="password"
+                                        placeholder="je89..."
+                                        value={config.stoat_token}
+                                        onChange={(e) => setConfig({ ...config, stoat_token: e.target.value })}
+                                    />
+                                </motion.div>
+                            ) : (
+                                <IdentityBadge info={botInfos.stoat} platform="Stoat" type="Bot" onEdit={() => setIsEditingToken({ ...isEditingToken, stoat: true })} />
+                            )}
+                        </AnimatePresence>
+                    </div>
                 </motion.div>
 
                 {/* 2. Server Setup */}
@@ -206,24 +244,45 @@ const App = () => {
                         <Server size={22} color="#4a90e2" />
                         <h2 style={{ fontSize: '1.1rem' }}>2. Server Setup</h2>
                     </div>
-                    <div className="form-group">
+
+                    {/* Source Server */}
+                    <div className="form-group" style={{ minHeight: '80px' }}>
                         <label>Source Server ID (Discord)</label>
-                        <input
-                            type="text"
-                            placeholder="10793..."
-                            value={config.source_server_id}
-                            onChange={(e) => setConfig({ ...config, source_server_id: e.target.value })}
-                        />
+                        <AnimatePresence mode="wait">
+                            {(isEditingServer.discord || !serverInfos.discord) ? (
+                                <motion.div key="input" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                                    <input
+                                        type="text"
+                                        placeholder="10793..."
+                                        value={config.source_server_id}
+                                        onChange={(e) => setConfig({ ...config, source_server_id: e.target.value })}
+                                    />
+                                </motion.div>
+                            ) : (
+                                <IdentityBadge info={serverInfos.discord} platform="Discord" type="Server" onEdit={() => setIsEditingServer({ ...isEditingServer, discord: true })} />
+                            )}
+                        </AnimatePresence>
                     </div>
-                    <div className="form-group">
+
+                    {/* Target Server */}
+                    <div className="form-group" style={{ minHeight: '80px' }}>
                         <label>Target Server ID (Stoat)</label>
-                        <input
-                            type="text"
-                            placeholder="01KHC..."
-                            value={config.target_server_id}
-                            onChange={(e) => setConfig({ ...config, target_server_id: e.target.value })}
-                        />
+                        <AnimatePresence mode="wait">
+                            {(isEditingServer.stoat || !serverInfos.stoat) ? (
+                                <motion.div key="input" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                                    <input
+                                        type="text"
+                                        placeholder="01KHC..."
+                                        value={config.target_server_id}
+                                        onChange={(e) => setConfig({ ...config, target_server_id: e.target.value })}
+                                    />
+                                </motion.div>
+                            ) : (
+                                <IdentityBadge info={serverInfos.stoat} platform="Stoat" type="Server" onEdit={() => setIsEditingServer({ ...isEditingServer, stoat: true })} />
+                            )}
+                        </AnimatePresence>
                     </div>
+
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '15px' }}>
                         <input type="checkbox" checked={config.dry_run} onChange={(e) => setConfig({ ...config, dry_run: e.target.checked })} style={{ width: 'auto' }} />
                         <label style={{ margin: 0, fontSize: '0.85rem' }}>Dry Run Mode</label>
@@ -257,7 +316,7 @@ const App = () => {
                             onChange={(e) => setConfig({ ...config, target_channel_id: e.target.value })}
                         />
                     </div>
-                    <div style={{ height: '37px' }}></div> {/* Spacer */}
+                    <div style={{ height: '37px' }}></div>
                     <button className="btn btn-primary" style={{ background: '#00cec9' }} onClick={() => handleRun('migrate')} disabled={status === 'running'}>
                         <MessageSquare size={16} /> Migrate History
                     </button>
@@ -290,7 +349,7 @@ const App = () => {
                 <Trash2 size={16} /> Clear Saved Data
             </button>
             <div style={{ marginTop: '20px', color: '#b2bec3', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Github size={14} /> <span>v1.2.0 • stoat-migrate.org</span>
+                <Github size={14} /> <span>v1.3.0 • stoat-migrate.org</span>
             </div>
         </div>
     );

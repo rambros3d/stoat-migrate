@@ -95,6 +95,38 @@ async def get_stoat_bot_info(data: TokenInput):
                 return {"name": user['username'], "avatar": avatar_url}
             return {"error": "Invalid token"}
 
+            return {"error": "Invalid token"}
+            
+class ServerInfoInput(BaseModel):
+    token: str
+    server_id: str
+
+@app.post("/api/server-info/discord")
+async def get_discord_server_info(data: ServerInfoInput):
+    async with aiohttp.ClientSession() as session:
+        headers = {"Authorization": f"Bot {data.token}"}
+        async with session.get(f"https://discord.com/api/v10/guilds/{data.server_id}", headers=headers) as resp:
+            if resp.status == 200:
+                guild = await resp.json()
+                icon_url = f"https://cdn.discordapp.com/icons/{guild['id']}/{guild['icon']}.png" if guild.get('icon') else None
+                return {"name": guild['name'], "icon": icon_url}
+            return {"error": "Invalid server ID or token privileges"}
+
+@app.post("/api/server-info/stoat")
+async def get_stoat_server_info(data: ServerInfoInput):
+    async with aiohttp.ClientSession() as session:
+        # Stoat uses X-Bot-Token for bot auth
+        headers = {"X-Bot-Token": data.token}
+        async with session.get(f"https://api.stoat.chat/servers/{data.server_id}", headers=headers) as resp:
+            if resp.status == 200:
+                server = await resp.json()
+                icon = server.get('icon')
+                icon_url = None
+                if icon:
+                    icon_url = f"https://cdn.stoatusercontent.com/attachments/{icon['_id']}/{icon['filename']}"
+                return {"name": server['name'], "icon": icon_url}
+            return {"error": "Invalid server ID or token privileges"}
+
 @app.post("/api/clone")
 async def start_clone(config: CloneConfig, background_tasks: BackgroundTasks):
     task_id = f"clone_{int(time.time())}"
