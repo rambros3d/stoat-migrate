@@ -25,6 +25,7 @@ class MigrationConfig(BaseModel):
     target_server_id: str
     source_channel_id: Optional[int] = None
     target_channel_id: Optional[str] = None
+    after_id: Optional[int] = None
     dry_run: bool = True
 
 class CloneConfig(BaseModel):
@@ -63,7 +64,8 @@ async def run_engine_task(task_type: str, config: dict, task_id: str):
             config['discord_token'],
             config['stoat_token'],
             config['source_channel_id'],
-            config['target_channel_id']
+            config['target_channel_id'],
+            after_id=config.get('after_id')
         )
         # run_migration already sends TASK_COMPLETE/FAILED internally now
 
@@ -146,26 +148,64 @@ async def list_discord_channels(data: ServerChannelsInput):
 class ChannelPreviewInput(BaseModel):
     token: str
     channel_id: str
+    after_id: Optional[str] = None
 
 @app.post("/api/channel-preview/discord")
 async def get_discord_channel_preview(data: ChannelPreviewInput):
     async with aiohttp.ClientSession() as session:
         headers = {"Authorization": f"Bot {data.token}"}
-        # Fetch first message of the channel
-        params = {"limit": 1, "after": "0"} 
-        async with session.get(f"https://discord.com/api/v10/channels/{data.channel_id}/messages", headers=headers, params=params) as resp:
-            if resp.status == 200:
-                msgs = await resp.json()
-                if msgs:
+        
+        # 1. Fetch the Starting Message (Inclusive)
+        # If after_id is provided, fetch it directly. If not, fetch the very first message.
+        if data.after_id:
+            try:
+                # Fetch target message
+                async with session.get(f"https://discord.com/api/v10/channels/{data.channel_id}/messages/{data.after_id}", headers=headers) as resp:
+                    if resp.status == 200:
+                        msg = await resp.json()
+                    else:
+                        return {"error": f"Discord API Error fetching message: {resp.status}"}
+            except Exception as e:
+                return {"error": str(e)}
+        else:
+            # Fetch very first message
+            params = {"limit": 1, "after": "0"} 
+            async with session.get(f"https://discord.com/api/v10/channels/{data.channel_id}/messages", headers=headers, params=params) as resp:
+                if resp.status == 200:
+                    msgs = await resp.json()
+                    if not msgs:
+                        return {"error": "Channel is empty"}
                     msg = msgs[0]
-                    return {
-                        "date": msg['timestamp'],
-                        "author": msg['author']['username'],
-                        "content": msg['content'][:100],
-                        "link": f"https://discord.com/channels/@me/{data.channel_id}/{msg['id']}"
-                    }
-                return {"error": "Channel is empty"}
-            return {"error": f"Discord API Error {resp.status}"}
+                else:
+                    return {"error": "Failed to fetch Discord channels"}
+
+        # 2. Count Messages from this point onwards (Scaling limit to avoid timeouts)
+        count = 0
+        current_after = msg['id']
+        try:
+            while count < 5000: # Cap preview count for performance
+                params = {"limit": 100, "after": current_after}
+                async with session.get(f"https://discord.com/api/v10/channels/{data.channel_id}/messages", headers=headers, params=params) as resp:
+                    if resp.status == 200:
+                        batch = await resp.json()
+                        if not batch:
+                            break
+                        count += len(batch)
+                        current_after = batch[-1]['id']
+                    else:
+                        break
+        except:
+            pass
+        
+        return {
+            "date": msg['timestamp'],
+            "author": msg['author']['username'],
+            "content": msg['content'][:100],
+            "id": msg['id'],
+            "link": f"https://discord.com/channels/@me/{data.channel_id}/{msg['id']}",
+            "count": count + 1,
+            "is_truncated": count >= 5000
+        }
 
 @app.post("/api/list-channels/stoat")
 async def list_stoat_channels(data: ServerChannelsInput):

@@ -32,6 +32,8 @@ const App = () => {
     const [progress, setProgress] = useState({ current: 0, total: 0, percent: 0 });
     const [previewData, setPreviewData] = useState(null);
     const [showConfirmation, setShowConfirmation] = useState(false);
+    const [customMessageLink, setCustomMessageLink] = useState('');
+    const [messageLinkError, setMessageLinkError] = useState('');
 
     const logEndRef = useRef(null);
 
@@ -145,11 +147,17 @@ const App = () => {
         const ws = new WebSocket(`ws://${window.location.host}/ws/logs/${tid}`);
         ws.onmessage = (event) => {
             const data = event.data;
-            if (data.startsWith('PROGRESS:')) {
-                const [curr, total] = data.replace('PROGRESS:', '').split('/').map(Number);
+
+            // Robust parsing for signals within formatted logs
+            const progressMatch = data.match(/PROGRESS:(\d+)\/(\d+)/);
+            if (progressMatch) {
+                const curr = parseInt(progressMatch[1]);
+                const total = parseInt(progressMatch[2]);
                 setProgress({ current: curr, total, percent: Math.round((curr / total) * 100) });
-            } else if (data === 'TASK_COMPLETE' || data === 'TASK_FAILED') {
-                setStatus(data === 'TASK_COMPLETE' ? 'success' : 'error');
+            }
+
+            if (data.includes('TASK_COMPLETE') || data.includes('TASK_FAILED')) {
+                setStatus(data.includes('TASK_COMPLETE') ? 'success' : 'error');
                 setProgress(prev => ({ ...prev, percent: 100 }));
                 ws.close();
             } else {
@@ -177,6 +185,8 @@ const App = () => {
                 if (res.data.error) throw new Error(res.data.error);
                 setPreviewData(res.data);
                 setShowConfirmation(true);
+                setCustomMessageLink('');
+                setMessageLinkError('');
                 return;
             } catch (err) {
                 alert(`Error fetching preview: ${err.message}`);
@@ -184,13 +194,19 @@ const App = () => {
             }
         }
 
+        let afterId = null;
+        if (customMessageLink) {
+            const match = customMessageLink.match(/channels\/\d+\/\d+\/(\d+)/);
+            if (match) afterId = match[1];
+        }
+
         setShowConfirmation(false);
         setStatus('running');
         setProgress({ current: 0, total: 0, percent: 0 });
         setLogs([]);
         try {
-            const endpoint = type === 'clone' ? '/api/clone' : '/api/migrate';
-            const res = await axios.post(endpoint, config);
+            const endpoint = '/api/migrate';
+            const res = await axios.post(endpoint, { ...config, after_id: afterId });
             setTaskId(res.data.task_id);
             connectWebSocket(res.data.task_id);
         } catch (err) {
@@ -435,7 +451,7 @@ const App = () => {
 
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
                                     <input type="checkbox" checked={config.dry_run} onChange={(e) => setConfig({ ...config, dry_run: e.target.checked })} style={{ width: 'auto' }} />
-                                    <label style={{ margin: 0, fontSize: '0.85rem' }}>Dry Run Mode</label>
+                                    <label style={{ margin: 0, fontSize: '0.85rem' }}>Run a Test without copying</label>
                                 </div>
 
                                 <div style={{ display: 'flex', gap: '15px' }}>
@@ -446,15 +462,6 @@ const App = () => {
                                         disabled={status === 'running' || !config.source_channel_id || !config.target_channel_id}
                                     >
                                         <MessageSquare size={16} /> Start Migration
-                                    </button>
-
-                                    <button
-                                        className="btn btn-primary"
-                                        style={{ background: 'none', border: '1px solid #4a90e2', color: '#4a90e2', width: 'auto' }}
-                                        onClick={() => handleRun('clone')}
-                                        disabled={status === 'running'}
-                                    >
-                                        <Play size={16} /> Clone All Channels
                                     </button>
                                 </div>
 
@@ -492,13 +499,56 @@ const App = () => {
                                 <div style={{ fontSize: '0.7rem', color: '#b2bec3', textTransform: 'uppercase', fontWeight: 700, marginBottom: '8px' }}>First Message Preview</div>
                                 <div style={{ fontWeight: 600, fontSize: '0.9rem', marginBottom: '4px' }}>{previewData?.author}</div>
                                 <div style={{ fontSize: '0.85rem', color: '#2d3436', marginBottom: '10px' }}>"{previewData?.content}..."</div>
-                                <a href={previewData?.link} target="_blank" rel="noreferrer" style={{ fontSize: '0.75rem', color: '#4a90e2', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                    View on Discord <ChevronRight size={12} />
-                                </a>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <a href={previewData?.link} target="_blank" rel="noreferrer" style={{ fontSize: '0.75rem', color: '#4a90e2', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                        View on Discord <ChevronRight size={12} />
+                                    </a>
+                                    <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#27ae60', background: 'rgba(39, 174, 96, 0.1)', padding: '2px 8px', borderRadius: '4px' }}>
+                                        {previewData?.count ? `${previewData.count}${previewData.is_truncated ? '+' : ''} messages` : 'Calculating...'}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style={{ marginBottom: '25px' }}>
+                                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#636e72', marginBottom: '8px', textTransform: 'uppercase' }}>Start from specific message (Optional)</label>
+                                <input
+                                    type="text"
+                                    placeholder="Paste Discord Message Link"
+                                    value={customMessageLink}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        setCustomMessageLink(val);
+                                        if (!val) { setMessageLinkError(''); return; }
+
+                                        const match = val.match(/channels\/(\d+)\/(\d+)\/(\d+)/);
+                                        if (match) {
+                                            const [_, gid, cid, mid] = match;
+                                            if (gid !== String(config.source_server_id)) {
+                                                setMessageLinkError('Link is from a different server!');
+                                            } else if (cid !== String(config.source_channel_id)) {
+                                                setMessageLinkError('Link is from a different channel!');
+                                            } else {
+                                                setMessageLinkError('');
+                                                // Trigger preview re-fetch
+                                                axios.post('/api/channel-preview/discord', {
+                                                    token: config.discord_token,
+                                                    channel_id: config.source_channel_id,
+                                                    after_id: mid
+                                                }).then(res => {
+                                                    if (!res.data.error) setPreviewData(res.data);
+                                                });
+                                            }
+                                        } else {
+                                            setMessageLinkError('Invalid Discord message link format');
+                                        }
+                                    }}
+                                    style={{ width: '100%', padding: '12px', borderRadius: '8px', border: `2px solid ${messageLinkError ? '#ff7675' : '#edf2f7'}`, outline: 'none' }}
+                                />
+                                {messageLinkError && <div style={{ fontSize: '0.7rem', color: '#ff7675', marginTop: '4px', fontWeight: 600 }}>{messageLinkError}</div>}
                             </div>
 
                             <div style={{ display: 'flex', gap: '12px' }}>
-                                <button className="btn btn-primary" style={{ background: '#00cec9' }} onClick={() => handleRun('migrate')}>Confirm & Start</button>
+                                <button className="btn btn-primary" style={{ background: '#00cec9' }} onClick={() => handleRun('migrate')} disabled={!!messageLinkError}>Confirm & Start</button>
                                 <button className="btn btn-primary" style={{ background: '#eee', color: '#2d3436' }} onClick={() => setShowConfirmation(false)}>Cancel</button>
                             </div>
                         </motion.div>

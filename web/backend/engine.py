@@ -262,8 +262,8 @@ class MigrationEngine:
         except Exception as e:
             self.logger.error(f"Failed to start Discord client: {e}")
 
-    async def run_migration(self, discord_token: str, stoat_token: str, source_chan: int, target_chan: str):
-        self.logger.info(f"Starting message migration from {source_chan} to {target_chan}")
+    async def run_migration(self, discord_token: str, stoat_token: str, source_chan: int, target_chan: str, after_id: Optional[int] = None):
+        self.logger.info(f"Starting message migration from {source_chan} to {target_chan}{' after ' + str(after_id) if after_id else ''}")
         # Need message content intent for fetching history properly
         intents = discord.Intents.default()
         intents.messages = True
@@ -279,7 +279,18 @@ class MigrationEngine:
                     return
 
                 messages = []
-                async for msg in channel.history(limit=None, oldest_first=True):
+                # Fetch the starting message itself if provided
+                if after_id:
+                    try:
+                        starting_msg = await channel.fetch_message(after_id)
+                        messages.append(starting_msg)
+                        self.logger.info(f"Including starting message: {after_id}")
+                    except Exception:
+                        self.logger.warning(f"Starting message {after_id} not found or inaccessible.")
+
+                # Fetch messages after the specified ID
+                after_obj = discord.Object(id=after_id) if after_id else None
+                async for msg in channel.history(limit=None, oldest_first=True, after=after_obj):
                     messages.append(msg)
                 
                 self.logger.info(f"Found {len(messages)} messages to migrate.")
