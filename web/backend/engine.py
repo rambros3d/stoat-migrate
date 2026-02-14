@@ -50,6 +50,10 @@ class MigrationEngine:
                         self.logger.warning(f"Rate limited. Waiting {retry_after}s...")
                         await asyncio.sleep(retry_after + 0.1)
                         continue
+                    elif resp.status >= 500:
+                        self.logger.warning(f"Stoat API Gateway Error ({resp.status}). Retrying in 2s...")
+                        await asyncio.sleep(2)
+                        continue
                     else:
                         error = await resp.text()
                         self.logger.error(f"Stoat API Error ({method} {path}): {resp.status} - {error}")

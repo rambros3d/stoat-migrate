@@ -148,9 +148,14 @@ async def list_stoat_channels(data: ServerChannelsInput):
         async with session.get(f"https://api.stoat.chat/servers/{data.server_id}/channels", headers=headers) as resp:
             if resp.status == 200:
                 channels = await resp.json()
-                # Return text channels
-                return [{"id": c['id'], "name": c['name']} for c in channels if c.get('channel_type') == 'Text']
-            return {"error": "Failed to fetch Stoat channels"}
+                if not isinstance(channels, list):
+                    print(f"[STOAT] Error: Channels response is not a list: {channels}")
+                    return []
+                filtered = [{"id": c['id'], "name": c['name']} for c in channels if str(c.get('channel_type', '')).lower() == 'text']
+                print(f"[STOAT] Found {len(filtered)} text channels out of {len(channels)} total.")
+                return filtered
+            print(f"[STOAT] API Error {resp.status} fetching channels for {data.server_id}")
+            return {"error": f"Stoat API Error {resp.status}"}
 
 @app.post("/api/clone")
 async def start_clone(config: CloneConfig, background_tasks: BackgroundTasks):

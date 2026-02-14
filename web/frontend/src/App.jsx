@@ -24,6 +24,7 @@ const App = () => {
     const [botInfos, setBotInfos] = useState({ discord: null, stoat: null });
     const [serverInfos, setServerInfos] = useState({ discord: null, stoat: null });
     const [channels, setChannels] = useState({ discord: [], stoat: [] });
+    const [isFetchingChannels, setIsFetchingChannels] = useState({ discord: false, stoat: false });
 
     const [isEditingToken, setIsEditingToken] = useState({ discord: false, stoat: false });
     const [isEditingServer, setIsEditingServer] = useState({ discord: false, stoat: false });
@@ -87,15 +88,21 @@ const App = () => {
     };
 
     const fetchChannels = async (platform) => {
+        setIsFetchingChannels(prev => ({ ...prev, [platform]: true }));
         try {
             const token = platform === 'discord' ? config.discord_token : config.stoat_token;
             const serverId = platform === 'discord' ? config.source_server_id : config.target_server_id;
             const res = await axios.post(`/api/list-channels/${platform}`, { token, server_id: serverId });
             if (Array.isArray(res.data)) {
                 setChannels(prev => ({ ...prev, [platform]: res.data }));
+            } else {
+                setChannels(prev => ({ ...prev, [platform]: [] }));
             }
         } catch (err) {
             console.error(`Error fetching ${platform} channels:`, err);
+            setChannels(prev => ({ ...prev, [platform]: [] }));
+        } finally {
+            setIsFetchingChannels(prev => ({ ...prev, [platform]: false }));
         }
     };
 
@@ -153,19 +160,23 @@ const App = () => {
     };
 
     const extractId = (input, platform, type) => {
-        if (!input) return '';
-        const discordGuildRegex = /(?:discord\.com|discordapp\.com)\/channels\/(\d+)/;
-        const discordChannelRegex = /(?:discord\.com|discordapp\.com)\/channels\/\d+\/(\d+)/;
+        if (!input || typeof input !== 'string') return input;
+
+        // Discord Regex
+        const discordGuildRegex = /discord(?:app)?\.com\/channels\/(\d+)/;
+        const discordChannelRegex = /discord(?:app)?\.com\/channels\/\d+\/(\d+)/;
+
+        // Stoat/Revolt Regex (Support app.stoat.chat, revolt.chat, etc)
         const stoatServerRegex = /(?:revolt\.chat|stoat\.chat)\/server\/([A-Z0-9]+)/i;
         const stoatChannelRegex = /(?:revolt\.chat|stoat\.chat)\/channel\/([A-Z0-9]+)/i;
+
         let match;
         if (platform === 'discord') {
-            if (type === 'server') match = input.match(discordGuildRegex);
-            else if (type === 'channel') match = input.match(discordChannelRegex);
-        } else if (platform === 'stoat') {
-            if (type === 'server') match = input.match(stoatServerRegex);
-            else if (type === 'channel') match = input.match(stoatChannelRegex);
+            match = input.match(type === 'server' ? discordGuildRegex : discordChannelRegex);
+        } else {
+            match = input.match(type === 'server' ? stoatServerRegex : stoatChannelRegex);
         }
+
         return match ? match[1] : input;
     };
 
@@ -337,46 +348,48 @@ const App = () => {
 
                                 <div className="form-group">
                                     <label>Source Channel (Discord)</label>
-                                    <div style={{ display: 'flex', gap: '10px' }}>
+                                    <div style={{ display: 'flex', gap: '12px' }}>
                                         <input
                                             type="text"
-                                            placeholder="Channel ID"
+                                            placeholder="Channel ID or Link"
                                             value={config.source_channel_id}
                                             onChange={(e) => setConfig({ ...config, source_channel_id: extractId(e.target.value, 'discord', 'channel') })}
-                                            style={{ flex: 1 }}
+                                            style={{ flex: '1 1 50%' }}
                                         />
-                                        {channels.discord.length > 0 && (
-                                            <select
-                                                style={{ width: '150px', borderRadius: '10px', border: '2px solid #edf2f7', padding: '0 10px' }}
-                                                value={config.source_channel_id}
-                                                onChange={(e) => setConfig({ ...config, source_channel_id: e.target.value })}
-                                            >
-                                                <option value="">Quick Select</option>
-                                                {channels.discord.map(c => <option key={c.id} value={c.id}>#{c.name}</option>)}
-                                            </select>
-                                        )}
+                                        <select
+                                            style={{ flex: '1 1 50%', borderRadius: '10px', border: '2px solid #edf2f7', padding: '0 12px', background: '#fff' }}
+                                            value={config.source_channel_id}
+                                            onChange={(e) => setConfig({ ...config, source_channel_id: e.target.value })}
+                                            disabled={isFetchingChannels.discord || channels.discord.length === 0}
+                                        >
+                                            <option value="">
+                                                {isFetchingChannels.discord ? 'Loading channels...' : channels.discord.length > 0 ? 'Quick Select Discord...' : 'No channels found'}
+                                            </option>
+                                            {channels.discord.map(c => <option key={c.id} value={c.id}>#{c.name}</option>)}
+                                        </select>
                                     </div>
                                 </div>
                                 <div className="form-group">
                                     <label>Target Channel (Stoat)</label>
-                                    <div style={{ display: 'flex', gap: '10px' }}>
+                                    <div style={{ display: 'flex', gap: '12px' }}>
                                         <input
                                             type="text"
-                                            placeholder="Channel ID"
+                                            placeholder="Channel ID or Link"
                                             value={config.target_channel_id}
                                             onChange={(e) => setConfig({ ...config, target_channel_id: extractId(e.target.value, 'stoat', 'channel') })}
-                                            style={{ flex: 1 }}
+                                            style={{ flex: '1 1 50%' }}
                                         />
-                                        {channels.stoat.length > 0 && (
-                                            <select
-                                                style={{ width: '150px', borderRadius: '10px', border: '2px solid #edf2f7', padding: '0 10px' }}
-                                                value={config.target_channel_id}
-                                                onChange={(e) => setConfig({ ...config, target_channel_id: e.target.value })}
-                                            >
-                                                <option value="">Quick Select</option>
-                                                {channels.stoat.map(c => <option key={c.id} value={c.id}>#{c.name}</option>)}
-                                            </select>
-                                        )}
+                                        <select
+                                            style={{ flex: '1 1 50%', borderRadius: '10px', border: '2px solid #edf2f7', padding: '0 12px', background: '#fff' }}
+                                            value={config.target_channel_id}
+                                            onChange={(e) => setConfig({ ...config, target_channel_id: e.target.value })}
+                                            disabled={isFetchingChannels.stoat || channels.stoat.length === 0}
+                                        >
+                                            <option value="">
+                                                {isFetchingChannels.stoat ? 'Loading channels...' : channels.stoat.length > 0 ? 'Quick Select Stoat...' : 'No channels found'}
+                                            </option>
+                                            {channels.stoat.map(c => <option key={c.id} value={c.id}>#{c.name}</option>)}
+                                        </select>
                                     </div>
                                 </div>
 
