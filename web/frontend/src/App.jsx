@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Server, MessageSquare, Terminal, Play, Trash2, Github, Edit3, Hash, CheckCircle2, ChevronRight, ChevronDown } from 'lucide-react';
+import { Shield, Server, MessageSquare, Terminal, Play, Trash2, Github, Edit3, Hash, CheckCircle2, ChevronRight, ChevronDown, Plus } from 'lucide-react';
 import axios from 'axios';
 
 const App = () => {
@@ -215,6 +215,51 @@ const App = () => {
         }
     };
 
+    const handleCreateAndMigrate = async () => {
+        if (!config.source_channel_id) {
+            alert("Please select a source channel first.");
+            return;
+        }
+
+        const sourceChannel = channels.discord.find(c => c.id === config.source_channel_id);
+        const channelName = sourceChannel ? sourceChannel.name : 'new-channel';
+
+        setStatus('running');
+        setLogs(prev => [...prev, `Creating new Stoat channel: #${channelName}...`]);
+
+        try {
+            const res = await axios.post('/api/channels/stoat', {
+                token: config.stoat_token,
+                server_id: config.target_server_id,
+                name: channelName
+            });
+
+            if (res.data.error) throw new Error(res.data.error);
+
+            const newChannelId = res.data._id;
+            setLogs(prev => [...prev, `Created channel #${channelName} (ID: ${newChannelId})`]);
+
+            // Update config with the new target channel ID
+            const newConfig = { ...config, target_channel_id: newChannelId };
+            setConfig(newConfig);
+
+            // Refresh stoat channels list
+            fetchChannels('stoat');
+
+            // Start migration
+            setLogs(prev => [...prev, `Starting migration to #${channelName}...`]);
+
+            // We need to pass the updated config directly because setConfig is async
+            const migrationRes = await axios.post('/api/migrate', { ...newConfig, after_id: null });
+            setTaskId(migrationRes.data.task_id);
+            connectWebSocket(migrationRes.data.task_id);
+
+        } catch (err) {
+            setStatus('error');
+            setLogs(prev => [...prev, `Error during channel creation/migration: ${err.message}`]);
+        }
+    };
+
     const extractId = (input, platform, type) => {
         if (!input || typeof input !== 'string') return input;
 
@@ -398,7 +443,7 @@ const App = () => {
                             <motion.div key="migration" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '5px' }}>
                                     <Hash size={22} color="#00cec9" />
-                                    <h2 style={{ fontSize: '1.2rem' }}>Migration Control</h2>
+                                    <h2 style={{ fontSize: '1.2rem' }}>Channel Migration</h2>
                                 </div>
                                 <p style={{ fontSize: '0.8rem', color: '#636e72', marginBottom: '25px' }}>Select channels or paste IDs to start synchronization</p>
 
@@ -457,11 +502,19 @@ const App = () => {
                                 <div style={{ display: 'flex', gap: '15px' }}>
                                     <button
                                         className="btn btn-primary"
-                                        style={{ background: '#00cec9' }}
+                                        style={{ background: '#00cec9', flex: 1 }}
                                         onClick={() => handleRun('migrate')}
                                         disabled={status === 'running' || !config.source_channel_id || !config.target_channel_id}
                                     >
                                         <MessageSquare size={16} /> Start Migration
+                                    </button>
+                                    <button
+                                        className="btn btn-primary"
+                                        style={{ background: '#a29bfe', flex: 1 }}
+                                        onClick={handleCreateAndMigrate}
+                                        disabled={status === 'running' || !config.source_channel_id}
+                                    >
+                                        <Plus size={16} /> Create & Migrate
                                     </button>
                                 </div>
 

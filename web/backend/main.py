@@ -35,6 +35,12 @@ class CloneConfig(BaseModel):
     target_server_id: str
     dry_run: bool = True
 
+class CreateChannelInput(BaseModel):
+    token: str
+    server_id: str
+    name: str
+    type: str = "Text"
+
 # Store active log streams
 log_streams = {}
 
@@ -179,32 +185,65 @@ async def get_discord_channel_preview(data: ChannelPreviewInput):
                 else:
                     return {"error": "Failed to fetch Discord channels"}
 
-        # 2. Count Messages from this point onwards (Scaling limit to avoid timeouts)
+        # 2. Count Messages accurately using backwards pagination
         count = 0
-        current_after = msg['id']
+        current_before = None
+        target_id = data.after_id
+        is_truncated = False
+        oldest_msg = None
+        
         try:
-            while count < 5000: # Cap preview count for performance
-                params = {"limit": 100, "after": current_after}
+            while count < 5000:
+                params = {"limit": 100}
+                if current_before:
+                    params["before"] = current_before
+                
                 async with session.get(f"https://discord.com/api/v10/channels/{data.channel_id}/messages", headers=headers, params=params) as resp:
                     if resp.status == 200:
                         batch = await resp.json()
                         if not batch:
                             break
+                        
+                        # The last message in any batch is the oldest found so far in that batch
+                        oldest_msg = batch[-1]
+                        
+                        # Check if target_id is in this batch
+                        found_target = False
+                        if target_id:
+                            for i, m in enumerate(batch):
+                                if m['id'] == target_id:
+                                    # Target reached! The count is everything from newest down to this index
+                                    count += (i + 1)
+                                    found_target = True
+                                    # Use the targeted message as the preview
+                                    oldest_msg = m
+                                    break
+                        
+                        if found_target:
+                            break
+                        
                         count += len(batch)
-                        current_after = batch[-1]['id']
+                        current_before = batch[-1]['id']
                     else:
                         break
+            
+            if count >= 5000:
+                is_truncated = True
+                
         except:
             pass
         
+        # Use oldest reached as the starting point preview
+        preview_msg = oldest_msg if oldest_msg else msg
+        
         return {
-            "date": msg['timestamp'],
-            "author": msg['author']['username'],
-            "content": msg['content'][:100],
-            "id": msg['id'],
-            "link": f"https://discord.com/channels/@me/{data.channel_id}/{msg['id']}",
-            "count": count + 1,
-            "is_truncated": count >= 5000
+            "date": preview_msg['timestamp'],
+            "author": preview_msg['author']['username'],
+            "content": preview_msg['content'][:100],
+            "id": preview_msg['id'],
+            "link": f"https://discord.com/channels/@me/{data.channel_id}/{preview_msg['id']}",
+            "count": count,
+            "is_truncated": is_truncated
         }
 
 @app.post("/api/list-channels/stoat")
@@ -241,6 +280,20 @@ async def list_stoat_channels(data: ServerChannelsInput):
             
             print(f"[STOAT] API Error {resp.status} fetching server {data.server_id}")
             return {"error": f"Stoat API Error {resp.status}"}
+
+@app.post("/api/channels/stoat")
+async def create_stoat_channel(data: CreateChannelInput):
+    async with aiohttp.ClientSession() as session:
+        headers = {"X-Bot-Token": data.token}
+        payload = {
+            "name": data.name,
+            "type": data.type
+        }
+        async with session.post(f"https://api.stoat.chat/servers/{data.server_id}/channels", json=payload, headers=headers) as resp:
+            if resp.status in [200, 201]:
+                return await resp.json()
+            error_text = await resp.text()
+            return {"error": f"Failed to create channel: {resp.status} - {error_text}"}
 
 @app.post("/api/clone")
 async def start_clone(config: CloneConfig, background_tasks: BackgroundTasks):
