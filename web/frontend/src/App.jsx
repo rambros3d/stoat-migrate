@@ -29,6 +29,10 @@ const App = () => {
     const [isEditingToken, setIsEditingToken] = useState({ discord: false, stoat: false });
     const [isEditingServer, setIsEditingServer] = useState({ discord: false, stoat: false });
 
+    const [progress, setProgress] = useState({ current: 0, total: 0, percent: 0 });
+    const [previewData, setPreviewData] = useState(null);
+    const [showConfirmation, setShowConfirmation] = useState(false);
+
     const logEndRef = useRef(null);
 
     useEffect(() => {
@@ -140,13 +144,49 @@ const App = () => {
     const connectWebSocket = (tid) => {
         const ws = new WebSocket(`ws://${window.location.host}/ws/logs/${tid}`);
         ws.onmessage = (event) => {
-            setLogs(prev => [...prev, event.data]);
+            const data = event.data;
+            if (data.startsWith('PROGRESS:')) {
+                const [curr, total] = data.replace('PROGRESS:', '').split('/').map(Number);
+                setProgress({ current: curr, total, percent: Math.round((curr / total) * 100) });
+            } else if (data === 'TASK_COMPLETE' || data === 'TASK_FAILED') {
+                setStatus(data === 'TASK_COMPLETE' ? 'success' : 'error');
+                setProgress(prev => ({ ...prev, percent: 100 }));
+                ws.close();
+            } else {
+                setLogs(prev => [...prev, data]);
+            }
         };
-        ws.onclose = () => console.log('Log stream finished');
+        ws.onclose = () => {
+            console.log('Log stream finished');
+            // Ensure status is success if we didn't get TASK_COMPLETE but closed normally
+            setStatus(prev => prev === 'running' ? 'success' : prev);
+        };
+        ws.onerror = (err) => {
+            console.error('WebSocket Error:', err);
+            setStatus('error');
+        };
     };
 
     const handleRun = async (type) => {
+        if (type === 'migrate' && !showConfirmation) {
+            try {
+                const res = await axios.post('/api/channel-preview/discord', {
+                    token: config.discord_token,
+                    channel_id: config.source_channel_id
+                });
+                if (res.data.error) throw new Error(res.data.error);
+                setPreviewData(res.data);
+                setShowConfirmation(true);
+                return;
+            } catch (err) {
+                alert(`Error fetching preview: ${err.message}`);
+                return;
+            }
+        }
+
+        setShowConfirmation(false);
         setStatus('running');
+        setProgress({ current: 0, total: 0, percent: 0 });
         setLogs([]);
         try {
             const endpoint = type === 'clone' ? '/api/clone' : '/api/migrate';
@@ -417,11 +457,54 @@ const App = () => {
                                         <Play size={16} /> Clone All Channels
                                     </button>
                                 </div>
+
+                                {status === 'running' && (
+                                    <div style={{ marginTop: '20px' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.8rem', color: '#636e72' }}>
+                                            <span>Migration Progress</span>
+                                            <span>{progress.percent}% ({progress.current}/{progress.total})</span>
+                                        </div>
+                                        <div style={{ height: '8px', background: '#edf2f7', borderRadius: '4px', overflow: 'hidden' }}>
+                                            <motion.div
+                                                style={{ height: '100%', background: '#00cec9' }}
+                                                initial={{ width: 0 }}
+                                                animate={{ width: `${progress.percent}%` }}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
                             </motion.div>
                         )}
                     </AnimatePresence>
                 </div>
             </div>
+
+            <AnimatePresence>
+                {showConfirmation && (
+                    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, backdropFilter: 'blur(4px)' }}>
+                        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="card glass" style={{ maxWidth: '450px', width: '90%', padding: '30px', boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}>
+                            <h3 style={{ marginBottom: '15px' }}>Confirm Migration</h3>
+                            <p style={{ color: '#636e72', fontSize: '0.9rem', marginBottom: '20px' }}>
+                                This will migrate messages from the selected channel starting from its first message.
+                            </p>
+
+                            <div style={{ background: '#f8f9fa', padding: '15px', borderRadius: '10px', marginBottom: '25px', border: '1px solid #edf2f7' }}>
+                                <div style={{ fontSize: '0.7rem', color: '#b2bec3', textTransform: 'uppercase', fontWeight: 700, marginBottom: '8px' }}>First Message Preview</div>
+                                <div style={{ fontWeight: 600, fontSize: '0.9rem', marginBottom: '4px' }}>{previewData?.author}</div>
+                                <div style={{ fontSize: '0.85rem', color: '#2d3436', marginBottom: '10px' }}>"{previewData?.content}..."</div>
+                                <a href={previewData?.link} target="_blank" rel="noreferrer" style={{ fontSize: '0.75rem', color: '#4a90e2', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                    View on Discord <ChevronRight size={12} />
+                                </a>
+                            </div>
+
+                            <div style={{ display: 'flex', gap: '12px' }}>
+                                <button className="btn btn-primary" style={{ background: '#00cec9' }} onClick={() => handleRun('migrate')}>Confirm & Start</button>
+                                <button className="btn btn-primary" style={{ background: '#eee', color: '#2d3436' }} onClick={() => setShowConfirmation(false)}>Cancel</button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
 
             {/* Console Output */}
             <motion.div className="card glass" style={{ maxWidth: '800px', width: '100%', padding: '20px' }} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}>

@@ -57,6 +57,7 @@ async def run_engine_task(task_type: str, config: dict, task_id: str):
             config['source_server_id'], 
             config['target_server_id']
         )
+        await log_callback("TASK_COMPLETE")
     elif task_type == "migrate":
         await engine.run_migration(
             config['discord_token'],
@@ -64,6 +65,7 @@ async def run_engine_task(task_type: str, config: dict, task_id: str):
             config['source_channel_id'],
             config['target_channel_id']
         )
+        # run_migration already sends TASK_COMPLETE/FAILED internally now
 
 class TokenInput(BaseModel):
     token: str
@@ -140,6 +142,30 @@ async def list_discord_channels(data: ServerChannelsInput):
                 # Filter for text channels (type 0) and threads if applicable
                 return [{"id": c['id'], "name": c['name'], "type": c['type']} for c in channels if c['type'] in [0, 5]]
             return {"error": "Failed to fetch Discord channels"}
+
+class ChannelPreviewInput(BaseModel):
+    token: str
+    channel_id: str
+
+@app.post("/api/channel-preview/discord")
+async def get_discord_channel_preview(data: ChannelPreviewInput):
+    async with aiohttp.ClientSession() as session:
+        headers = {"Authorization": f"Bot {data.token}"}
+        # Fetch first message of the channel
+        params = {"limit": 1, "after": "0"} 
+        async with session.get(f"https://discord.com/api/v10/channels/{data.channel_id}/messages", headers=headers, params=params) as resp:
+            if resp.status == 200:
+                msgs = await resp.json()
+                if msgs:
+                    msg = msgs[0]
+                    return {
+                        "date": msg['timestamp'],
+                        "author": msg['author']['username'],
+                        "content": msg['content'][:100],
+                        "link": f"https://discord.com/channels/@me/{data.channel_id}/{msg['id']}"
+                    }
+                return {"error": "Channel is empty"}
+            return {"error": f"Discord API Error {resp.status}"}
 
 @app.post("/api/list-channels/stoat")
 async def list_stoat_channels(data: ServerChannelsInput):

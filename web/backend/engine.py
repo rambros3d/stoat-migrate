@@ -283,8 +283,9 @@ class MigrationEngine:
                     messages.append(msg)
                 
                 self.logger.info(f"Found {len(messages)} messages to migrate.")
+                total = len(messages)
                 
-                for msg in messages:
+                for idx, msg in enumerate(messages):
                     author_name = msg.author.display_name or msg.author.name
                     self.message_author_cache[msg.id] = author_name
                     
@@ -302,6 +303,8 @@ class MigrationEngine:
                     masquerade = {"name": author_name, "avatar": str(msg.author.display_avatar.url)}
                     
                     if self.config.get('dry_run'):
+                        # Still emit progress in dry run
+                        self.logger.info(f"PROGRESS:{idx+1}/{total}")
                         self.logger.info(f"[DRY RUN] Would migrate message from {author_name}")
                         continue
 
@@ -313,10 +316,13 @@ class MigrationEngine:
                         payload["attachments"] = stoat_attachments
 
                     await self.stoat_request(stoat_token, "POST", f"/channels/{target_chan}/messages", payload)
+                    self.logger.info(f"PROGRESS:{idx+1}/{total}")
                 
                 self.logger.info("Message migration finished.")
+                self.logger.info("TASK_COMPLETE")
             except Exception as e:
                 self.logger.error(f"Error in migration: {e}")
+                self.logger.info("TASK_FAILED")
             finally:
                 await client.close()
 
