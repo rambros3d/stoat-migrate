@@ -314,7 +314,15 @@ class MigrationEngine:
                     timestamp = msg.created_at.strftime("%Y-%m-%d %H:%M:%S UTC")
                     # Move timestamp to first line of message content. Username is already in masquerade.
                     header = f"*{timestamp}*\n"
-                    final_content = header + (formatted_content if formatted_content else "*(Attachment/Embed)*")
+                    
+                    if not formatted_content:
+                        if stoat_attachments:
+                            final_content = header
+                        else:
+                            # Fallback if both content and attachments are missing (e.g. unknown embed type)
+                            final_content = header + "*(Attachment/Embed)*"
+                    else:
+                        final_content = header + formatted_content
 
                     # Truncate masquerade name to 32 characters
                     masquerade = {"name": author_name[:32], "avatar": str(msg.author.display_avatar.url)}
