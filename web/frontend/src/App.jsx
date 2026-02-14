@@ -130,6 +130,26 @@ const App = () => {
         }
     };
 
+    const extractId = (input, platform, type) => {
+        if (!input) return '';
+
+        const discordGuildRegex = /(?:discord\.com|discordapp\.com)\/channels\/(\d+)/;
+        const discordChannelRegex = /(?:discord\.com|discordapp\.com)\/channels\/\d+\/(\d+)/;
+        const stoatServerRegex = /(?:revolt\.chat|stoat\.chat)\/server\/([A-Z0-9]+)/i;
+        const stoatChannelRegex = /(?:revolt\.chat|stoat\.chat)\/channel\/([A-Z0-9]+)/i;
+
+        let match;
+        if (platform === 'discord') {
+            if (type === 'server') match = input.match(discordGuildRegex);
+            else if (type === 'channel') match = input.match(discordChannelRegex);
+        } else if (platform === 'stoat') {
+            if (type === 'server') match = input.match(stoatServerRegex);
+            else if (type === 'channel') match = input.match(stoatChannelRegex);
+        }
+
+        return match ? match[1] : input;
+    };
+
     const IdentityBadge = ({ info, platform, type, onEdit }) => (
         <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -255,7 +275,7 @@ const App = () => {
                                         type="text"
                                         placeholder="10793..."
                                         value={config.source_server_id}
-                                        onChange={(e) => setConfig({ ...config, source_server_id: e.target.value })}
+                                        onChange={(e) => setConfig({ ...config, source_server_id: extractId(e.target.value, 'discord', 'server') })}
                                     />
                                 </motion.div>
                             ) : (
@@ -274,7 +294,7 @@ const App = () => {
                                         type="text"
                                         placeholder="01KHC..."
                                         value={config.target_server_id}
-                                        onChange={(e) => setConfig({ ...config, target_server_id: e.target.value })}
+                                        onChange={(e) => setConfig({ ...config, target_server_id: extractId(e.target.value, 'stoat', 'server') })}
                                     />
                                 </motion.div>
                             ) : (
@@ -304,7 +324,7 @@ const App = () => {
                             type="text"
                             placeholder="13285..."
                             value={config.source_channel_id}
-                            onChange={(e) => setConfig({ ...config, source_channel_id: e.target.value })}
+                            onChange={(e) => setConfig({ ...config, source_channel_id: extractId(e.target.value, 'discord', 'channel') })}
                         />
                     </div>
                     <div className="form-group">
@@ -313,7 +333,7 @@ const App = () => {
                             type="text"
                             placeholder="01KHC..."
                             value={config.target_channel_id}
-                            onChange={(e) => setConfig({ ...config, target_channel_id: e.target.value })}
+                            onChange={(e) => setConfig({ ...config, target_channel_id: extractId(e.target.value, 'stoat', 'channel') })}
                         />
                     </div>
                     <div style={{ height: '37px' }}></div>
