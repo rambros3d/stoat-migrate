@@ -310,9 +310,14 @@ class MigrationEngine:
                             if file_id:
                                 stoat_attachments.append(file_id)
                     
-                    # Generate timestamp for masquerade
+                    # Generate timestamp and header
                     timestamp = msg.created_at.strftime("%Y-%m-%d %H:%M:%S UTC")
-                    masquerade = {"name": f"{author_name} ({timestamp})", "avatar": str(msg.author.display_avatar.url)}
+                    # Move timestamp to first line of message content. Username is already in masquerade.
+                    header = f"*{timestamp}*\n"
+                    final_content = header + (formatted_content if formatted_content else "*(Attachment/Embed)*")
+
+                    # Truncate masquerade name to 32 characters
+                    masquerade = {"name": author_name[:32], "avatar": str(msg.author.display_avatar.url)}
                     
                     if self.config.get('dry_run'):
                         # Still emit progress in dry run
@@ -321,7 +326,7 @@ class MigrationEngine:
                         continue
 
                     payload = {
-                        "content": formatted_content if formatted_content else "*(Attachment/Embed)*",
+                        "content": final_content,
                         "masquerade": masquerade
                     }
                     if stoat_attachments:
