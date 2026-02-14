@@ -32,12 +32,74 @@ class MigrationEngine:
         handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
         self.logger.addHandler(handler)
         
+        self.stoat_api = "https://api.stoat.chat"
+        self.stoat_cdn = None
         self.role_map = {}
         self.channel_map = {}
         self.message_author_cache = {}
+        self.avatar_cache = {}
+
+    async def get_stoat_cdn_url(self, token: str) -> str:
+        """Fetch the Autumn CDN URL from Stoat API root or fallback to default"""
+        if self.stoat_cdn:
+            return self.stoat_cdn
+            
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(self.stoat_api, timeout=5) as resp:
+                    if resp.status == 200:
+                        data = await resp.json()
+                        cdn_url = data.get('features', {}).get('autumn', {}).get('url')
+                        if cdn_url:
+                            self.stoat_cdn = cdn_url.rstrip('/')
+                            self.logger.info(f"Detected Stoat CDN URL: {self.stoat_cdn}")
+                            return self.stoat_cdn
+        except Exception as e:
+            self.logger.warning(f"Failed to fetch CDN URL from API root: {e}")
+            
+        # Fallback to known default
+        self.stoat_cdn = "https://cdn.stoatusercontent.com"
+        return self.stoat_cdn
+
+    async def upload_to_stoat(self, token: str, file_url: str, filename: str, tag: str = "attachments") -> Optional[str]:
+        """Download Discord attachment and upload to Stoat CDN with retry logic"""
+        if self.config.get('dry_run'):
+            self.logger.info(f"[DRY RUN] Would upload {filename} to Stoat CDN ({tag})")
+            return "dry-run-file-id"
+            
+        cdn_base = await self.get_stoat_cdn_url(token)
+        
+        async with aiohttp.ClientSession() as session:
+            try:
+                # Download from Discord CDN
+                async with session.get(file_url) as resp:
+                    if resp.status != 200:
+                        self.logger.warning(f"Failed to download {filename}: HTTP {resp.status}")
+                        return None
+                    file_data = await resp.read()
+                
+                # Upload to Stoat Autumn CDN
+                form = aiohttp.FormData()
+                form.add_field('file', file_data, filename=filename)
+                
+                async with session.post(
+                    f"{cdn_base}/{tag}",
+                    data=form,
+                    headers={"X-Bot-Token": token}
+                ) as resp:
+                    if resp.status == 200:
+                        result = await resp.json()
+                        return result['id']
+                    else:
+                        error_text = await resp.text()
+                        self.logger.warning(f"Stoat CDN upload failed: {resp.status} - {error_text}")
+            except Exception as e:
+                self.logger.error(f"Error uploading {filename}: {e}")
+        
+        return None
 
     async def stoat_request(self, token: str, method: str, path: str, json_data: dict = None) -> Optional[dict]:
-        url = f"https://api.stoat.chat{path}"
+        url = f"{self.stoat_api}{path}"
         headers = {"X-Bot-Token": token}
         
         for attempt in range(3):
@@ -59,6 +121,41 @@ class MigrationEngine:
                         self.logger.error(f"Stoat API Error ({method} {path}): {resp.status} - {error}")
                         return None
         return None
+
+    def _format_message_content(self, msg: discord.Message) -> str:
+        """Format message content including replies, forwards, and embeds"""
+        parts = []
+        
+        # 1. Handle Replies
+        snapshots = getattr(msg, 'message_snapshots', [])
+        if msg.reference and msg.reference.message_id and not snapshots:
+             ref_id = msg.reference.message_id
+             reply_user = self.message_author_cache.get(ref_id)
+             parts.append(f"> *Replying to {reply_user or 'a message'}*")
+
+        # 2. Forwarded Messages
+        if snapshots:
+            for snapshot in snapshots:
+                forwarded_content = getattr(snapshot, 'content', '')
+                if forwarded_content:
+                    parts.append(f"> **Forwarded Message**:\n> {forwarded_content}")
+                if hasattr(snapshot, 'attachments'):
+                     for att in snapshot.attachments:
+                         parts.append(f"> *Attachment: {att.url}*")
+
+        # 3. Rich Embeds
+        if msg.embeds:
+            for embed in msg.embeds:
+                if (msg.clean_content or "").strip() and embed.type in ['link', 'video', 'article', 'image', 'gifv']:
+                    continue
+                if embed.url and embed.url not in (msg.clean_content or ""):
+                     parts.append(embed.url)
+
+        # 4. Main Content
+        if msg.clean_content:
+            parts.append(msg.clean_content)
+            
+        return "\n".join(parts)
 
     def map_permissions(self, discord_perms: discord.Permissions) -> int:
         stoat_bits = 0
@@ -167,7 +264,11 @@ class MigrationEngine:
 
     async def run_migration(self, discord_token: str, stoat_token: str, source_chan: int, target_chan: str):
         self.logger.info(f"Starting message migration from {source_chan} to {target_chan}")
-        client = discord.Client(intents=discord.Intents.default())
+        # Need message content intent for fetching history properly
+        intents = discord.Intents.default()
+        intents.messages = True
+        intents.message_content = True
+        client = discord.Client(intents=intents)
 
         @client.event
         async def on_ready():
@@ -177,7 +278,6 @@ class MigrationEngine:
                     self.logger.error("Discord channel not found.")
                     return
 
-                # Fetch all messages
                 messages = []
                 async for msg in channel.history(limit=None, oldest_first=True):
                     messages.append(msg)
@@ -186,18 +286,33 @@ class MigrationEngine:
                 
                 for msg in messages:
                     author_name = msg.author.display_name or msg.author.name
-                    content = msg.clean_content
-                    # Basic masquerade
+                    self.message_author_cache[msg.id] = author_name
+                    
+                    formatted_content = self._format_message_content(msg)
+                    
+                    # Handle attachments
+                    stoat_attachments = []
+                    if msg.attachments:
+                        for att in msg.attachments:
+                            file_id = await self.upload_to_stoat(stoat_token, att.url, att.filename)
+                            if file_id:
+                                stoat_attachments.append(file_id)
+                    
+                    # Masquerade
                     masquerade = {"name": author_name, "avatar": str(msg.author.display_avatar.url)}
                     
                     if self.config.get('dry_run'):
                         self.logger.info(f"[DRY RUN] Would migrate message from {author_name}")
                         continue
 
-                    await self.stoat_request(stoat_token, "POST", f"/channels/{target_chan}/messages", {
-                        "content": content if content else "*(Attachment/Embed)*",
+                    payload = {
+                        "content": formatted_content if formatted_content else "*(Attachment/Embed)*",
                         "masquerade": masquerade
-                    })
+                    }
+                    if stoat_attachments:
+                        payload["attachments"] = stoat_attachments
+
+                    await self.stoat_request(stoat_token, "POST", f"/channels/{target_chan}/messages", payload)
                 
                 self.logger.info("Message migration finished.")
             except Exception as e:
