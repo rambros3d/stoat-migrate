@@ -156,7 +156,8 @@ const App = () => {
     };
 
     const connectWebSocket = (tid) => {
-        const ws = new WebSocket(`ws://${window.location.host}/ws/logs/${tid}`);
+        const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const ws = new WebSocket(`${wsProtocol}//${window.location.host}/ws/logs/${tid}`);
         ws.onmessage = (event) => {
             const data = event.data;
 

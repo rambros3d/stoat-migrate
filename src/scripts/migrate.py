@@ -281,7 +281,79 @@ class MigrationBot:
             async for message in channel.history(limit=None, oldest_first=True):
                 messages.append(message)
             
-            logger.info(f"Found {len(messages)} messages. Starting migration...")
+            logger.info(f"Found {len(messages)} messages.")
+            
+            # Fetch threads (both active and archived)
+            logger.info("Fetching threads from channel...")
+            all_threads = []
+            try:
+                # Fetch active threads
+                active_threads = channel.threads
+                all_threads.extend(active_threads)
+                logger.info(f"Found {len(active_threads)} active threads")
+                
+                # Fetch archived threads
+                async for thread in channel.archived_threads(limit=None):
+                    all_threads.append(thread)
+                logger.info(f"Found {len(all_threads)} total threads (active + archived)")
+                
+                # Process each thread
+                for thread in all_threads:
+                    logger.info(f"Processing thread: {thread.name}")
+                    thread_messages = []
+                    
+                    # Fetch all messages from the thread
+                    async for msg in thread.history(limit=None, oldest_first=True):
+                        thread_messages.append(msg)
+                    
+                    if thread_messages:
+                        # Create thread start marker
+                        class ThreadMarker:
+                            def __init__(self, content, created_at, is_start=True):
+                                self.content = content
+                                self.clean_content = content
+                                self.created_at = created_at
+                                self.author = type('obj', (object,), {
+                                    'display_name': 'System',
+                                    'name': 'System',
+                                    'display_avatar': type('obj', (object,), {'url': ''})()\
+                                })()
+                                self.attachments = []
+                                self.embeds = []
+                                self.reference = None
+                                self.id = 0
+                                self.is_thread_marker = True
+                                self.is_start = is_start
+                        
+                        # Add thread start marker
+                        start_marker = ThreadMarker(
+                            f"### [ THREAD: '{thread.name}']",
+                            thread.created_at,
+                            is_start=True
+                        )
+                        messages.append(start_marker)
+                        
+                        # Add thread messages
+                        messages.extend(thread_messages)
+                        
+                        # Add thread end marker
+                        end_marker = ThreadMarker(
+                            "### [end of THREAD]",
+                            thread_messages[-1].created_at,
+                            is_start=False
+                        )
+                        messages.append(end_marker)
+                        
+                        logger.info(f"Added {len(thread_messages)} messages from thread '{thread.name}'")
+            
+            except Exception as e:
+                logger.warning(f"Error fetching threads: {e}")
+            
+            # Sort all messages by timestamp to maintain chronological order
+            messages.sort(key=lambda m: m.created_at)
+            logger.info(f"Total messages to migrate (including threads): {len(messages)}")
+            
+            logger.info(f"Starting migration...")
             
             if messages:
                 # Get Stoat metadata
@@ -346,6 +418,22 @@ class MigrationBot:
             
             for msg in tqdm(messages, desc="Migrating messages", unit="msg"):
                 try:
+                    # Handle thread markers specially
+                    if hasattr(msg, 'is_thread_marker') and msg.is_thread_marker:
+                        if not self.config['migration']['dry_run']:
+                            # Send thread marker as plain text without masquerade
+                            async with aiohttp.ClientSession() as session:
+                                async with session.post(
+                                    f"{self.stoat_api}/channels/{self.config['stoat']['target_channel_id']}/messages",
+                                    json={"content": msg.content},
+                                    headers={"X-Bot-Token": self.config['stoat']['token']}
+                                ) as resp:
+                                    if resp.status not in [200, 201]:
+                                        logger.warning(f"Failed to send thread marker: {resp.status}")
+                        logger.debug(f"Sent thread marker: {msg.content}")
+                        success_count += 1
+                        continue
+                    
                     logger.debug(f"Processing message from {msg.author.name} ({msg.created_at})")
                     # Format timestamp
                     timestamp = msg.created_at.strftime("%Y-%m-%d %H:%M:%S UTC")
