@@ -1,6 +1,7 @@
 {
     "name": "discord-terminator-backend",
     "version": "2.0.0",
+    "author": "rambrosteam <rambrosteam@gmail.com>",
     "description": "Discord to Stoat migration backend",
     "main": "server.js",
     "type": "module",
@@ -40,7 +41,6 @@
         ],
         "win": {
             "target": [
-                "nsis",
                 "portable"
             ],
             "icon": "../../icon.png"
