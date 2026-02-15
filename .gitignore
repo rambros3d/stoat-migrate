@@ -36,3 +36,10 @@ logs/
 *.swp
 *.swo
 *~
+# Large Directories / Runtime
+.node_runtime/
+.venv/
+node_modules/
+**/node_modules/
+src/frontend/dist/
+.DS_Store
