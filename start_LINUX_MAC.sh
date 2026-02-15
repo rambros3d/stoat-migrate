@@ -30,9 +30,9 @@ if check_docker; then
     echo "🐳 Docker is available and running."
     echo "Starting with Docker Compose..."
     if docker compose version &> /dev/null; then
-        docker compose up -d --build
+        docker compose -f docker-compose.yml up -d --build
     else
-        docker-compose up -d --build
+        docker-compose -f docker-compose.yml up -d --build
     fi
     echo "✅ App running at http://localhost:8000"
     exit 0
@@ -40,9 +40,9 @@ elif check_podman; then
     echo "🦭 Podman is available and running."
     echo "Starting with Podman Compose..."
     if command -v podman-compose &> /dev/null; then
-        podman-compose up -d --build
+        podman-compose -f docker-compose.yml up -d --build
     elif podman compose version &> /dev/null; then
-        podman compose up -d --build
+        podman compose -f docker-compose.yml up -d --build
     else
         echo "⚠️ podman-compose not found, falling back to portable mode."
     fi

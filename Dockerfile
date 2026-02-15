@@ -33,7 +33,7 @@ WORKDIR /app
 COPY src/backend/ ./src/backend/
 
 # Copy built frontend from previous stage
-COPY --from=frontend-builder /app/frontend/dist /app/src/frontend/dist
+COPY --from=frontend-builder /app/frontend/dist /app/src/backend/frontend_dist
 
 # Expose port
 EXPOSE 8000

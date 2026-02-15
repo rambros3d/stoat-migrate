@@ -67,7 +67,7 @@ jobs:
           cp README.md release/
           cp ai.txt release/
           cp version.txt release/
-          zip -r DiscordTerminator-windows.zip release/
+          7z a -tzip DiscordTerminator-windows.zip release/
 
       - name: Create Release and Upload Artifacts
         uses: softprops/action-gh-release@v2
