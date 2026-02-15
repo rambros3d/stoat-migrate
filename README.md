@@ -7,8 +7,13 @@ A powerful, full-stack JavaScript tool to archive and migrate Discord channels t
 ## 🚀 Quick Start
 
 ### Linux / macOS
+Run the launcher:
 ```bash
 ./start_LINUX_MAC.sh
+```
+Or for **Desktop Mode**:
+```bash
+./start_LINUX_MAC.sh --desktop
 ```
 
 ### Windows

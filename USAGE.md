@@ -91,8 +91,8 @@ Discord Terminator can now be deployed in **3 simple ways**:
 **Mac/Linux:**
 1. Install [Node.js 18+](https://nodejs.org/)
 2. Open Terminal
-3. Run: `./start_LINUX_MAC.sh`
-4. Open `http://localhost:8000`
+3. Run: `./start_LINUX_MAC.sh` (or `./start_LINUX_MAC.sh --desktop`)
+4. Open `http://localhost:8000` (if in browser mode)
 
 ### Documentation:
 - **[QUICKSTART.md](QUICKSTART.md)** - Quick reference

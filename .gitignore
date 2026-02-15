@@ -38,8 +38,24 @@ logs/
 *~
 # Large Directories / Runtime
 .node_runtime/
-.venv/
 node_modules/
 **/node_modules/
+
+# Build & Distribution
+dist_electron/
 src/frontend/dist/
+src/backend/frontend_dist/
+src/backend/dist/
+dist/
+
+# Logs
+logs/
+*.log
+
+# IDE & OS
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 .DS_Store

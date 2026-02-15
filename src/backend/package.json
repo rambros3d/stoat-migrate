@@ -6,7 +6,11 @@
     "type": "module",
     "scripts": {
         "start": "node server.js",
-        "dev": "node --watch server.js"
+        "dev": "node --watch server.js",
+        "electron": "electron electron-main.js",
+        "dist": "npm run build-frontend && electron-builder",
+        "pack": "electron-builder --dir",
+        "build-frontend": "cd ../frontend && npm install && npm run build && cd ../backend && rm -rf frontend_dist && cp -r ../frontend/dist ./frontend_dist"
     },
     "dependencies": {
         "axios": "^1.6.0",
@@ -18,5 +22,33 @@
     },
     "engines": {
         "node": ">=18.0.0"
+    },
+    "devDependencies": {
+        "electron": "^40.4.1",
+        "electron-builder": "^24.13.3"
+    },
+    "build": {
+        "appId": "chat.stoat.terminator",
+        "productName": "Discord Terminator",
+        "directories": {
+            "output": "../../dist_electron"
+        },
+        "files": [
+            "**/*",
+            "!../../dist_electron",
+            "frontend_dist/**/*"
+        ],
+        "win": {
+            "target": [
+                "nsis",
+                "portable"
+            ],
+            "icon": "../../icon.png"
+        },
+        "linux": {
+            "target": "AppImage",
+            "icon": "../../icon.png"
+        },
+        "asar": true
     }
 }

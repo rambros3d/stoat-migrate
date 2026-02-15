@@ -15,7 +15,13 @@ const PORT = process.env.PORT || 8000;
 
 // Get the directory paths
 const BASE_DIR = path.resolve(__dirname, '../..');
-const FRONTEND_DIST = path.join(BASE_DIR, 'src', 'frontend', 'dist');
+let FRONTEND_DIST = path.join(BASE_DIR, 'src', 'frontend', 'dist');
+
+// If packaged with Electron, the dist might be in a different relative spot
+const PACKAGED_DIST = path.join(__dirname, 'frontend_dist');
+if (fs.existsSync(PACKAGED_DIST)) {
+    FRONTEND_DIST = PACKAGED_DIST;
+}
 
 // Middleware
 app.use(cors());
