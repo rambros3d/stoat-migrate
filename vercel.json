@@ -1,22 +1,22 @@
 {
     "version": 2,
     "functions": {
-        "src/backend/server.js": {
+        "api/index.js": {
             "includeFiles": "src/backend/frontend_dist/**"
         }
     },
     "rewrites": [
         {
             "source": "/api/(.*)",
-            "destination": "/src/backend/server.js"
+            "destination": "/api/index.js"
         },
         {
             "source": "/ws/(.*)",
-            "destination": "/src/backend/server.js"
+            "destination": "/api/index.js"
         },
         {
             "source": "/(.*)",
-            "destination": "/src/backend/server.js"
+            "destination": "/api/index.js"
         }
     ]
 }
