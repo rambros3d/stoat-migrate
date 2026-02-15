@@ -3,6 +3,6 @@
     "version": "2.0.0",
     "private": true,
     "scripts": {
-        "build": "cd src/frontend && npm install && npm run build && cd ../backend && npm install && mkdir -p frontend_dist && cp -r ../frontend/dist/* ./frontend_dist/"
+        "build": "cd src/frontend && npm install && npm run build && cd ../backend && npm install && mkdir -p frontend_dist && cp -r ../frontend/dist/* ./frontend_dist/ && cd ../.. && mkdir -p public"
     }
 }
