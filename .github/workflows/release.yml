@@ -9,6 +9,8 @@ jobs:
   release:
     name: Build and Release
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
 
     strategy:
       matrix:
@@ -49,9 +51,9 @@ jobs:
         run: |
           cd src/backend
           if [ "$RUNNER_OS" == "Linux" ]; then
-            npx electron-builder --linux
+            npx electron-builder --linux -p never
           elif [ "$RUNNER_OS" == "Windows" ]; then
-            npx electron-builder --win
+            npx electron-builder --win -p never
           fi
 
       - name: Create Release and Upload Artifacts
