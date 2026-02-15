@@ -9,10 +9,6 @@ set NODE_DIST=node-%NODE_VERSION-win-x64
 set NODE_URL=https://nodejs.org/dist/%NODE_VERSION%/%NODE_DIST%.zip
 set RUNTIME_DIR=.node_runtime
 
-:: Check for --desktop flag
-set LAUNCH_MODE=browser
-if "%1"=="--desktop" set LAUNCH_MODE=desktop
-
 :: 1. Setup Node.js
 if not exist "%RUNTIME_DIR%\%NODE_DIST%" (
     echo 📥 Downloading portable Node.js %NODE_VERSION%...
@@ -33,35 +29,27 @@ set PATH=%CD%\%RUNTIME_DIR%\%NODE_DIST%;%PATH%
 echo Node version: 
 node -v
 
-:: 2. Install Backend Dependencies
-echo === 📦 Installing Dependencies ===
-cd src\backend
-call npm install
-if "%LAUNCH_MODE%"=="desktop" (
-    echo 📦 Installing Electron...
-    call npm install --save-dev electron
-)
-cd ..\..
-
-:: 3. Start Application
-echo === 🔥 Starting Application ===
-
-if "%LAUNCH_MODE%"=="desktop" (
-    echo 🚀 Launching Desktop App...
-    cd src\backend
-    call npm run electron
-) else (
-    echo 🏗️ Building Frontend...
+:: 2. Build Frontend (if not already built in src\backend\frontend_dist)
+if not exist "src\backend\frontend_dist" (
+    echo === 📦 Building Frontend ===
     cd src\frontend
     call npm install
     call npm run build
+    cd ..\backend
+    if not exist "frontend_dist" mkdir "frontend_dist"
+    xcopy /E /I /Y ..\frontend\dist\* frontend_dist\
     cd ..\..
-    
-    echo ✅ App successfully started!
-    echo 👉 Open http://localhost:8000 in your browser
-    echo Press Ctrl+C to stop.
-    cd src\backend
-    node server.js
 )
+
+:: 3. Install Backend Dependencies
+echo === 📦 Installing Backend Dependencies ===
+cd src\backend
+call npm install
+cd ..\..
+
+:: 4. Start Application
+echo === 🔥 Starting Application ===
+cd src\backend
+node server.js
 
 pause

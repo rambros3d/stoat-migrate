@@ -12,10 +12,7 @@
     "scripts": {
         "start": "node server.js",
         "dev": "node --watch server.js",
-        "electron": "electron electron-main.js",
-        "dist": "npm run build-frontend && electron-builder",
-        "pack": "electron-builder --dir",
-        "build-frontend": "cd ../frontend && npm install && npm run build && cd ../backend && rm -rf frontend_dist && cp -r ../frontend/dist ./frontend_dist"
+        "build": "cd ../frontend && npm install && npm run build && cd ../backend && rm -rf frontend_dist && cp -r ../frontend/dist ./frontend_dist"
     },
     "dependencies": {
         "axios": "^1.6.0",
@@ -23,47 +20,11 @@
         "discord.js": "^14.15.0",
         "express": "^4.18.0",
         "form-data": "^4.0.0",
+        "open": "^10.1.0",
         "ws": "^8.16.0"
     },
     "engines": {
         "node": ">=18.0.0"
     },
-    "devDependencies": {
-        "electron": "^40.4.1",
-        "electron-builder": "^24.13.3"
-    },
-    "build": {
-        "appId": "chat.stoat.terminator",
-        "productName": "Discord Terminator",
-        "directories": {
-            "output": "../../dist_electron"
-        },
-        "files": [
-            "**/*",
-            "!../../dist_electron",
-            "frontend_dist/**/*"
-        ],
-        "win": {
-            "target": [
-                "portable"
-            ],
-            "icon": "../../icon.png"
-        },
-        "linux": {
-            "target": [
-                "AppImage",
-                "deb",
-                "rpm"
-            ],
-            "icon": "../../icon.png"
-        },
-        "asar": true,
-        "publish": [
-            {
-                "provider": "github",
-                "owner": "rambros3d",
-                "repo": "discord-terminator"
-            }
-        ]
-    }
+    "devDependencies": {}
 }

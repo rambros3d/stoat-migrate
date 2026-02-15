@@ -6,6 +6,7 @@ import axios from 'axios';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { MigrationEngine } from './engine.js';
+import open from 'open';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,13 +16,7 @@ const PORT = process.env.PORT || 8000;
 
 // Get the directory paths
 const BASE_DIR = path.resolve(__dirname, '../..');
-let FRONTEND_DIST = path.join(BASE_DIR, 'src', 'frontend', 'dist');
-
-// If packaged with Electron, the dist might be in a different relative spot
-const PACKAGED_DIST = path.join(__dirname, 'frontend_dist');
-if (fs.existsSync(PACKAGED_DIST)) {
-    FRONTEND_DIST = PACKAGED_DIST;
-}
+const FRONTEND_DIST = path.join(__dirname, 'frontend_dist');
 
 // Middleware
 app.use(cors());
@@ -353,9 +348,11 @@ function startServer(port, attempts = 0) {
         console.log(`👉 Open http://localhost:${port} in your browser`);
         console.log('Press Ctrl+C to stop.');
 
-        // Signal to parent process (Electron) which port we are using
-        if (process.send) {
-            process.send({ type: 'PORT_ALREADY', port });
+        // Automatically open the browser
+        if (attempts === 0) {
+            open(`http://localhost:${port}`).catch(err => {
+                console.error('Failed to open browser automatically:', err);
+            });
         }
 
         // WebSocket server for real-time logs
