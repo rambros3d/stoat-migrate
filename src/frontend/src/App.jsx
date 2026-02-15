@@ -155,13 +155,51 @@ const App = () => {
         }
     };
 
+    const pollLogs = (tid) => {
+        const interval = setInterval(async () => {
+            try {
+                const res = await axios.get(`/api/logs/${tid}`);
+                const { logs: newLogs, status: taskStatus } = res.data;
+
+                // Update logs (only new ones)
+                setLogs(newLogs);
+
+                // Update progress from logs
+                const lastLog = newLogs[newLogs.length - 1];
+                if (lastLog) {
+                    const progressMatch = lastLog.match(/PROGRESS:(\d+)\/(\d+)/);
+                    if (progressMatch) {
+                        const curr = parseInt(progressMatch[1]);
+                        const total = parseInt(progressMatch[2]);
+                        setProgress({ current: curr, total, percent: Math.round((curr / total) * 100) });
+                    }
+                }
+
+                if (taskStatus === 'completed' || taskStatus === 'not_found' || newLogs.some(l => l.includes('TASK_COMPLETE') || l.includes('TASK_FAILED'))) {
+                    setStatus(newLogs.some(l => l.includes('TASK_FAILED')) ? 'error' : 'success');
+                    setProgress(prev => ({ ...prev, percent: 100 }));
+                    clearInterval(interval);
+                }
+            } catch (err) {
+                console.error('Polling error:', err);
+            }
+        }, 2000);
+        return interval;
+    };
+
     const connectWebSocket = (tid) => {
         const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const ws = new WebSocket(`${wsProtocol}//${window.location.host}/ws/logs/${tid}`);
+        let ws;
+        try {
+            ws = new WebSocket(`${wsProtocol}//${window.location.host}/ws/logs/${tid}`);
+        } catch (e) {
+            console.warn('WebSockets not supported, falling back to polling.');
+            pollLogs(tid);
+            return;
+        }
+
         ws.onmessage = (event) => {
             const data = event.data;
-
-            // Robust parsing for signals within formatted logs
             const progressMatch = data.match(/PROGRESS:(\d+)\/(\d+)/);
             if (progressMatch) {
                 const curr = parseInt(progressMatch[1]);
@@ -177,14 +215,18 @@ const App = () => {
                 setLogs(prev => [...prev, data]);
             }
         };
-        ws.onclose = () => {
-            console.log('Log stream finished');
-            // Ensure status is success if we didn't get TASK_COMPLETE but closed normally
-            setStatus(prev => prev === 'running' ? 'success' : prev);
+
+        ws.onclose = (e) => {
+            // If it closed prematurely or couldn't connect, start polling
+            if (status === 'running' && !e.wasClean) {
+                console.warn('WebSocket closed unexpectedly. Starting poll fallback...');
+                pollLogs(tid);
+            }
         };
-        ws.onerror = (err) => {
-            console.error('WebSocket Error:', err);
-            setStatus('error');
+
+        ws.onerror = () => {
+            console.warn('WebSocket error. Starting poll fallback...');
+            pollLogs(tid);
         };
     };
 

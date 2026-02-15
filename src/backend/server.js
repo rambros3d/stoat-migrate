@@ -7,6 +7,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { MigrationEngine } from './engine.js';
 import open from 'open';
+import crypto from 'crypto';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -22,8 +23,11 @@ const FRONTEND_DIST = path.join(__dirname, 'frontend_dist');
 app.use(cors());
 app.use(express.json());
 
-// Store active log streams
+// Store active logs for polling and task state
 const logStreams = {};
+const logBuffers = {}; // Buffer for polling (Vercel support)
+const activeTasks = new Set();
+const MAX_CONCURRENT_TASKS = process.env.MAX_TASKS || 50;
 
 // Health check endpoints
 app.get('/health', (req, res) => {
@@ -44,7 +48,15 @@ app.get('/api/health', (req, res) => {
 
 // Background task runner
 async function runEngineTask(taskType, config, taskId) {
+    activeTasks.add(taskId);
+    if (!logBuffers[taskId]) logBuffers[taskId] = [];
+
     const logCallback = async (msg) => {
+        // 1. Add to buffer for polling
+        logBuffers[taskId].push(msg);
+        if (logBuffers[taskId].length > 1000) logBuffers[taskId].shift();
+
+        // 2. Send to WebSockets
         if (logStreams[taskId]) {
             for (const ws of logStreams[taskId]) {
                 try {
@@ -77,10 +89,18 @@ async function runEngineTask(taskType, config, taskId) {
                 config.target_channel_id,
                 config.after_id
             );
+            await logCallback('TASK_COMPLETE');
         }
     } catch (err) {
         await logCallback(`Error: ${err.message}`);
         await logCallback('TASK_FAILED');
+    } finally {
+        activeTasks.delete(taskId);
+        // Clean up buffers after 5 minutes
+        setTimeout(() => {
+            delete logStreams[taskId];
+            delete logBuffers[taskId];
+        }, 300000);
     }
 }
 
@@ -306,7 +326,10 @@ app.post('/api/channels/stoat', async (req, res) => {
 
 // Task endpoints
 app.post('/api/clone', async (req, res) => {
-    const taskId = `clone_${Math.floor(Date.now() / 1000)}`;
+    if (activeTasks.size >= MAX_CONCURRENT_TASKS) {
+        return res.status(503).json({ error: 'Server busy. Too many active migrations.' });
+    }
+    const taskId = crypto.randomUUID();
     const config = req.body;
     runEngineTask('clone', config, taskId).catch(err => {
         console.error('Clone task error:', err);
@@ -315,12 +338,24 @@ app.post('/api/clone', async (req, res) => {
 });
 
 app.post('/api/migrate', async (req, res) => {
-    const taskId = `migrate_${Math.floor(Date.now() / 1000)}`;
+    if (activeTasks.size >= MAX_CONCURRENT_TASKS) {
+        return res.status(503).json({ error: 'Server busy. Too many active migrations.' });
+    }
+    const taskId = crypto.randomUUID();
     const config = req.body;
     runEngineTask('migrate', config, taskId).catch(err => {
         console.error('Migration task error:', err);
     });
     res.json({ task_id: taskId, status: 'started' });
+});
+
+app.get('/api/logs/:taskId', (req, res) => {
+    const { taskId } = req.params;
+    const logs = logBuffers[taskId] || [];
+    res.json({
+        logs,
+        status: activeTasks.has(taskId) ? 'running' : (logBuffers[taskId] ? 'completed' : 'not_found')
+    });
 });
 
 // Serve static frontend files
