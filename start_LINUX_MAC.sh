@@ -58,21 +58,7 @@ fi
 echo "⚠️ Container runtime not available. Falling back to Portable Mode."
 echo "=== 🛠️ Setting up Portable Environment ==="
 
-# 2.1 Setup Python Virtual Environment
-if [ ! -d "$VENV_DIR" ]; then
-    echo "🐍 Creating Python virtual environment..."
-    python3 -m venv "$VENV_DIR"
-fi
-
-# Activate venv for the script execution
-source "$VENV_DIR/bin/activate"
-
-# Ensure pip is installed/upgraded
-echo "📦 Ensuring pip is installed..."
-python3 -m ensurepip --upgrade || true
-pip install --upgrade pip
-
-# 2.2 Setup Node.js
+# 2.1 Setup Node.js
 if [ ! -d "$RUNTIME_DIR/$NODE_DIST" ]; then
     echo "📥 Downloading Node.js $NODE_VERSION..."
     mkdir -p "$RUNTIME_DIR"
@@ -90,24 +76,11 @@ export PATH="$(pwd)/$RUNTIME_DIR/$NODE_DIST/bin:$PATH"
 echo "Node version: $(node -v)"
 echo "NPM version: $(npm -v)"
 
-# 2.3 Install Python Dependencies
-echo "=== 🐍 Installing Python Dependencies ==="
-if [ -f "requirements.txt" ]; then
-    pip install -r requirements.txt
-else
-    echo "⚠️ requirements.txt not found!"
-    exit 1
-fi
-
-# 2.4 Install Frontend Dependencies & Build
-
+# 2.2 Install Frontend Dependencies & Build
 echo "=== 📦 Installing & Building Frontend ==="
 if [ -d "src/frontend" ]; then
     cd src/frontend
-    # Always ensure dependencies are installed/updated
     npm install
-    
-    
     echo "🏗️ Building Frontend..."
     npm run build
     cd ../..
@@ -116,12 +89,22 @@ else
     exit 1
 fi
 
-# 2.5 Start Backend
+# 2.3 Install Backend Dependencies
+echo "=== 📦 Installing Backend Dependencies ==="
+if [ -d "src/backend" ]; then
+    cd src/backend
+    npm install
+    cd ../..
+else
+    echo "⚠️ src/backend directory not found!"
+    exit 1
+fi
+
+# 2.4 Start Backend
 echo "=== 🔥 Starting Application ==="
 echo "✅ App successfully started!"
 echo "👉 Open http://localhost:8000 in your browser"
 echo "Press Ctrl+C to stop."
 
-export PYTHONUNBUFFERED=1
-# Run uvicorn using the venv's python
-python -m uvicorn src.backend.main:app --host 0.0.0.0 --port 8000
+cd src/backend
+node server.js

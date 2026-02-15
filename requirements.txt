@@ -1,5 +1,0 @@
-discord.py>=2.3.2
-aiohttp>=3.9.0
-tqdm>=4.66.0
-fastapi>=0.104.0
-uvicorn[standard]>=0.24.0
