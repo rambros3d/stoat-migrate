@@ -17,8 +17,7 @@
         },
         {
             "src": "/ws/(.*)",
-            "status": 404,
-            "statusText": "WebSockets not supported on Vercel"
+            "status": 404
         },
         {
             "src": "/(.*)",
