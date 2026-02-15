@@ -16,6 +16,12 @@ Or for **Desktop Mode**:
 ./start_LINUX_MAC.sh --desktop
 ```
 
+#### 🐧 Linux Troubleshooting (FUSE error)
+If you get a `libfuse.so.2` error on Ubuntu or Fedora:
+- **Ubuntu/Debian**: `sudo apt install libfuse2`
+- **Fedora**: `sudo dnf install fuse-libs`
+- **Or**: Use the `.deb` or `.rpm` installers from the Releases page.
+
 ### Windows
 Double-click `start_WINDOWS.bat` (Coming soon: updated bat script)
 

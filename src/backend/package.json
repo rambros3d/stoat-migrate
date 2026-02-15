@@ -50,7 +50,11 @@
             "icon": "../../icon.png"
         },
         "linux": {
-            "target": "AppImage",
+            "target": [
+                "AppImage",
+                "deb",
+                "rpm"
+            ],
             "icon": "../../icon.png"
         },
         "asar": true,

@@ -62,6 +62,8 @@ jobs:
         with:
           files: |
             dist_electron/*.AppImage
+            dist_electron/*.deb
+            dist_electron/*.rpm
             dist_electron/*.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
