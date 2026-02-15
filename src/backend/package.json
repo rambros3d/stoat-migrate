@@ -5,6 +5,10 @@
     "description": "Discord to Stoat migration backend",
     "main": "server.js",
     "type": "module",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/rambros3d/discord-terminator.git"
+    },
     "scripts": {
         "start": "node server.js",
         "dev": "node --watch server.js",
@@ -49,6 +53,13 @@
             "target": "AppImage",
             "icon": "../../icon.png"
         },
-        "asar": true
+        "asar": true,
+        "publish": [
+            {
+                "provider": "github",
+                "owner": "rambros3d",
+                "repo": "discord-terminator"
+            }
+        ]
     }
 }
