@@ -341,39 +341,64 @@ if (fs.existsSync(FRONTEND_DIST)) {
     });
 }
 
-// Start HTTP server
-const server = app.listen(PORT, '0.0.0.0', () => {
-    console.log(`✅ App successfully started!`);
-    console.log(`👉 Open http://localhost:${PORT} in your browser`);
-    console.log('Press Ctrl+C to stop.');
-});
-
-// WebSocket server for real-time logs
-const wss = new WebSocketServer({ noServer: true });
-
-server.on('upgrade', (request, socket, head) => {
-    const { pathname } = new URL(request.url, `http://${request.headers.host}`);
-    if (pathname.startsWith('/ws/logs/')) {
-        wss.handleUpgrade(request, socket, head, (ws) => {
-            wss.emit('connection', ws, request);
-        });
-    } else {
-        socket.destroy();
+// Start HTTP server with dynamic port selection
+function startServer(port, attempts = 0) {
+    if (attempts > 10) {
+        console.error('❌ Could not find an available port after 10 attempts.');
+        process.exit(1);
     }
-});
 
-wss.on('connection', (ws, req) => {
-    const pathParts = req.url.split('/');
-    const taskId = pathParts[pathParts.length - 1];
-    if (!logStreams[taskId]) logStreams[taskId] = [];
-    logStreams[taskId].push(ws);
-    console.log(`WebSocket connection opened for task: ${taskId}`);
-    ws.on('close', () => {
-        if (logStreams[taskId]) {
-            const index = logStreams[taskId].indexOf(ws);
-            if (index > -1) logStreams[taskId].splice(index, 1);
+    const server = app.listen(port, '0.0.0.0', () => {
+        console.log(`✅ App successfully started on port ${port}!`);
+        console.log(`👉 Open http://localhost:${port} in your browser`);
+        console.log('Press Ctrl+C to stop.');
+
+        // Signal to parent process (Electron) which port we are using
+        if (process.send) {
+            process.send({ type: 'PORT_ALREADY', port });
         }
-        console.log(`WebSocket connection closed for task: ${taskId}`);
+
+        // WebSocket server for real-time logs
+        const wss = new WebSocketServer({ noServer: true });
+
+        server.on('upgrade', (request, socket, head) => {
+            const { pathname } = new URL(request.url, `http://${request.headers.host}`);
+            if (pathname.startsWith('/ws/logs/')) {
+                wss.handleUpgrade(request, socket, head, (ws) => {
+                    wss.emit('connection', ws, request);
+                });
+            } else {
+                socket.destroy();
+            }
+        });
+
+        wss.on('connection', (ws, req) => {
+            const pathParts = req.url.split('/');
+            const taskId = pathParts[pathParts.length - 1];
+            if (!logStreams[taskId]) logStreams[taskId] = [];
+            logStreams[taskId].push(ws);
+            console.log(`WebSocket connection opened for task: ${taskId}`);
+            ws.on('close', () => {
+                if (logStreams[taskId]) {
+                    const index = logStreams[taskId].indexOf(ws);
+                    if (index > -1) logStreams[taskId].splice(index, 1);
+                }
+                console.log(`WebSocket connection closed for task: ${taskId}`);
+            });
+            ws.on('error', (err) => console.error('WebSocket error:', err));
+        });
     });
-    ws.on('error', (err) => console.error('WebSocket error:', err));
-});
+
+    server.on('error', (err) => {
+        if (err.code === 'EADDRINUSE') {
+            console.log(`⚠️ Port ${port} is busy, trying ${port + 1}...`);
+            startServer(port + 1, attempts + 1);
+        } else {
+            console.error('Server error:', err);
+        }
+    });
+
+    return server;
+}
+
+const server = startServer(PORT);

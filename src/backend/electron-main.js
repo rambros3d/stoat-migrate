@@ -23,15 +23,26 @@ function createWindow() {
 
     // Start the Express server as a background process
     serverProcess = fork(path.join(__dirname, 'server.js'), [], {
-        env: { ...process.env, PORT: 8001 } // Use a different port if needed
+        env: { ...process.env, PORT: 8001 }
     });
 
-    // Give the server a second to start, then load the address
-    setTimeout(() => {
-        mainWindow.loadURL('http://localhost:8001');
-    }, 2000);
+    // Handle port signaled from the server process
+    serverProcess.on('message', (message) => {
+        if (message.type === 'PORT_ALREADY') {
+            console.log(`Desktop UI connecting to actual port: ${message.port}`);
+            mainWindow.loadURL(`http://localhost:${message.port}`);
+        }
+    });
+
+    // Fallback load if no message received within 5 seconds
+    const fallbackTimeout = setTimeout(() => {
+        if (mainWindow && !mainWindow.webContents.getURL()) {
+            mainWindow.loadURL('http://localhost:8001');
+        }
+    }, 5000);
 
     mainWindow.on('closed', () => {
+        clearTimeout(fallbackTimeout);
         mainWindow = null;
         if (serverProcess) serverProcess.kill();
     });
