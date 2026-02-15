@@ -1,35 +1,19 @@
+```json
 {
     "version": 2,
-    "builds": [
+    "rewrites": [
         {
-            "src": "src/backend/server.js",
-            "use": "@vercel/node"
+            "source": "/api/(.*)",
+            "destination": "/src/backend/server.js"
         },
         {
-            "src": "src/backend/frontend_dist/**/*",
-            "use": "@vercel/static"
-        }
-    ],
-    "routes": [
-        {
-            "src": "/api/(.*)",
-            "dest": "src/backend/server.js"
+            "source": "/ws/(.*)",
+            "destination": "/src/backend/server.js"
         },
         {
-            "src": "/ws/(.*)",
-            "status": 404
-        },
-        {
-            "src": "/(.*)",
-            "dest": "/src/backend/frontend_dist/$1",
-            "check": true
-        },
-        {
-            "handle": "filesystem"
-        },
-        {
-            "src": "/(.*)",
-            "dest": "/src/backend/frontend_dist/index.html"
+            "source": "/(.*)",
+            "destination": "/src/backend/server.js"
         }
     ]
 }
+```
