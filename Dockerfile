@@ -14,28 +14,23 @@ COPY src/frontend/ ./
 # Build frontend for production
 RUN npm run build
 
-# Stage 2: Python Backend + Serve Frontend
-FROM python:3.11-slim
+# Stage 2: Node.js Backend + Serve Frontend
+FROM node:20-alpine
 
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    gcc \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+# Install curl for healthcheck
+RUN apk add --no-cache curl
 
-# Copy Python requirements
-COPY requirements.txt .
+# Copy backend package files
+COPY src/backend/package*.json ./src/backend/
+WORKDIR /app/src/backend
+RUN npm install --production
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt && \
-    pip install --no-cache-dir fastapi uvicorn[standard]
+WORKDIR /app
 
 # Copy backend code
 COPY src/backend/ ./src/backend/
-COPY src/scripts/ ./src/scripts/
-COPY src/__init__.py ./src/
 
 # Copy built frontend from previous stage
 COPY --from=frontend-builder /app/frontend/dist /app/src/frontend/dist
@@ -44,9 +39,8 @@ COPY --from=frontend-builder /app/frontend/dist /app/src/frontend/dist
 EXPOSE 8000
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health').read()" || exit 1
-
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
 
 # Start the application
-CMD ["uvicorn", "src.backend.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["node", "src/backend/server.js"]
