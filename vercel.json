@@ -1,0 +1,36 @@
+{
+    "version": 2,
+    "builds": [
+        {
+            "src": "src/backend/server.js",
+            "use": "@vercel/node"
+        },
+        {
+            "src": "src/backend/frontend_dist/**/*",
+            "use": "@vercel/static"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/api/(.*)",
+            "dest": "src/backend/server.js"
+        },
+        {
+            "src": "/ws/(.*)",
+            "status": 404,
+            "statusText": "WebSockets not supported on Vercel"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/src/backend/frontend_dist/$1",
+            "check": true
+        },
+        {
+            "handle": "filesystem"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/src/backend/frontend_dist/index.html"
+        }
+    ]
+}

@@ -398,4 +398,9 @@ function startServer(port, attempts = 0) {
     return server;
 }
 
-const server = startServer(PORT);
+// Only start the server if we're not on Vercel
+if (!process.env.VERCEL) {
+    const server = startServer(PORT);
+}
+
+export default app;
