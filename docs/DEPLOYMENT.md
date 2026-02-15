@@ -44,7 +44,7 @@ docker-compose up -d
 
 ## 💻 Option 2: Startup Scripts
 
-**Perfect for:** Users who already have Python/Node.js installed
+**Perfect for:** Users who already have Node.js 18+ installed
 
 ### Pros:
 - ✅ No Docker needed
@@ -53,7 +53,7 @@ docker-compose up -d
 - ✅ Easy debugging
 
 ### Cons:
-- ❌ Requires Python 3.11+ and Node.js 18+
+- ❌ Requires Node.js 18+
 - ❌ Manual dependency installation
 - ❌ Platform-specific issues possible
 
@@ -61,12 +61,12 @@ docker-compose up -d
 
 **Windows:**
 ```cmd
-start.bat
+start_WINDOWS.bat
 ```
 
 **Mac/Linux:**
 ```bash
-./start.sh
+./start_LINUX_MAC.sh
 ```
 
 ### Documentation:
@@ -177,14 +177,14 @@ fly deploy
 ### Quick Start:
 ```bash
 # Install dependencies
-pip install -r requirements.txt
-cd web/frontend && npm install
+src/backend && npm install
+src/frontend && npm install
 
 # Terminal 1: Backend
-python -m uvicorn web.backend.main:app --reload --port 8000
+cd src/backend && npm run dev
 
 # Terminal 2: Frontend
-cd web/frontend && npm run dev
+cd src/frontend && npm run dev
 ```
 
 ### Documentation:
@@ -201,7 +201,7 @@ cd web/frontend && npm run dev
 ### I need to share this with my team
 → **Railway.app** or **Render.com** ([DOCKER.md](DOCKER.md))
 
-### I already have Python/Node.js installed
+### I already have Node.js installed
 → **Startup Scripts** ([QUICKSTART.md](QUICKSTART.md))
 
 ### I want to contribute or modify the code
@@ -233,7 +233,7 @@ cd web/frontend && npm run dev
 | Method | RAM | Disk | CPU | Bandwidth |
 |--------|-----|------|-----|-----------|
 | Docker | 512MB | 1GB | Low | Medium |
-| Scripts | 256MB | 500MB | Low | Medium |
+| Scripts | 256MB | 400MB | Low | Medium |
 | Cloud | Varies | Varies | Low | High |
 
 **Note:** During large migrations (10k+ messages), RAM usage may spike to ~500MB.
@@ -252,7 +252,7 @@ docker-compose up -d --build
 ### Scripts:
 ```bash
 git pull
-./start.sh  # or start.bat
+./start_LINUX_MAC.sh  # or start_WINDOWS.bat
 ```
 
 ### Cloud:

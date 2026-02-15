@@ -1,6 +1,6 @@
 # 🐳 Docker Deployment Guide
 
-Discord Terminator can be run with a single Docker command - no need to install Python, Node.js, or any dependencies!
+Discord Terminator can be run with a single Docker command - no need to install Node.js or any dependencies!
 
 ## 🚀 Quick Start (Recommended)
 
@@ -121,10 +121,11 @@ For development with hot-reload:
 
 ```bash
 # Backend
-python -m uvicorn web.backend.main:app --reload --port 8000
+cd src/backend
+npm run dev
 
 # Frontend (in another terminal)
-cd web/frontend
+cd src/frontend
 npm run dev
 ```
 
@@ -149,7 +150,7 @@ Make sure Docker is installed and running:
 The Docker build should handle this automatically. If you see this error:
 
 ```bash
-cd web/frontend
+cd src/frontend
 npm install
 npm run build
 ```
@@ -172,7 +173,7 @@ docker-compose build
 
 ## 📊 Resource Usage
 
-- **Image Size:** ~500MB (includes Node.js build tools + Python runtime)
+- **Image Size:** ~400MB (fully minimized Node.js runtime)
 - **Memory:** ~200-500MB during migration
 - **CPU:** Minimal (mostly waiting for API responses)
 

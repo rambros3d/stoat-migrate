@@ -15,8 +15,8 @@ docker-compose down
 ```
 
 ### 💻 Script Method (No Docker)
-**Windows:** Double-click `start.bat`  
-**Mac/Linux:** Run `./start.sh` in Terminal
+**Windows:** Double-click `start_WINDOWS.bat`  
+**Mac/Linux:** Run `./start_LINUX_MAC.sh` in Terminal
 
 ---
 
@@ -25,21 +25,23 @@ docker-compose down
 ### Local Development
 ```bash
 # Backend (Terminal 1)
-python -m uvicorn web.backend.main:app --reload --port 8000
+cd src/backend
+npm run dev
 
 # Frontend (Terminal 2)
-cd web/frontend && npm run dev
+cd src/frontend
+npm run dev
 ```
 
 ### Production Build
 ```bash
 # Build frontend
-cd web/frontend
+cd src/frontend
 npm run build
 
 # Run backend (serves built frontend)
-cd ../..
-python -m uvicorn web.backend.main:app --host 0.0.0.0 --port 8000
+cd ../backend
+npm start
 ```
 
 ### Docker Commands
@@ -107,16 +109,17 @@ fly deploy
 discord-terminator/
 ├── Dockerfile              # Docker build instructions
 ├── docker-compose.yml      # One-command deployment
-├── start.sh / start.bat    # Easy startup scripts
-├── requirements.txt        # Python dependencies
-├── web/
+├── start_LINUX_MAC.sh      # Easy startup script (Mac/Linux)
+├── start_WINDOWS.bat       # Easy startup script (Windows)
+├── src/
 │   ├── backend/
-│   │   ├── main.py        # FastAPI server
-│   │   └── engine.py      # Migration logic
+│   │   ├── server.js       # Express server
+│   │   ├── engine.js       # Migration logic
+│   │   └── package.json    # Backend dependencies
 │   └── frontend/
-│       ├── src/
-│       │   └── App.jsx    # React UI
-│       └── dist/          # Built frontend (after npm build)
+│       ├── src/            # React UI source
+│       ├── package.json    # Frontend dependencies
+│       └── dist/           # Built frontend
 ├── DOCKER.md              # Docker guide
 ├── NON-TECHNICAL-GUIDE.md # User-friendly guide
 └── README.md              # Main documentation

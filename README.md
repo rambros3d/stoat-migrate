@@ -2,7 +2,7 @@
 
 # Discord Terminator
 
-A powerful tool to archive and migrate Discord channels to [Revolt](https://revolt.chat) (via Stoat) or view them locally.
+A powerful, full-stack JavaScript tool to archive and migrate Discord channels to [Revolt](https://revolt.chat) (via Stoat) or view them locally.
 
 ## 🚀 Quick Start
 
@@ -12,15 +12,13 @@ A powerful tool to archive and migrate Discord channels to [Revolt](https://revo
 ```
 
 ### Windows
-Double-click `start_WIN.cmd` or run:
-```cmd
-start_WIN.cmd
-```
+Double-click `start_WINDOWS.bat` (Coming soon: updated bat script)
 
 ## Features
 - **Archive**: Clone Discord server structure (Roles, Channels, Categories).
 - **Migrate**: Move message history including attachments, embeds, and replies.
-- **View**: Inspect messages locally.
+- **Node.js Backend**: Faster, more reliable migration engine using `discord.js`.
+- **WebSocket Logs**: Real-time progress tracking in your browser.
 
 ## Documentation
 - [Usage Guide](docs/usage.md)

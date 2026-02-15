@@ -5,7 +5,7 @@
 ## 🚀 Easiest Method: Docker (Recommended)
 
 ### What is Docker?
-Docker is like a "ready-to-go box" that contains everything needed to run Discord Terminator. You don't need to install Python, Node.js, or anything else!
+Docker is like a "ready-to-go box" that contains everything needed to run Discord Terminator. You don't need to install Node.js or anything else!
 
 ### Step-by-Step Guide
 
@@ -47,7 +47,7 @@ cd discord-terminator
 
 **Windows:**
 1. Open the `discord-terminator` folder
-2. Double-click `start.bat`
+2. Double-click `start_WINDOWS.bat`
 3. Wait for the setup to complete (first time takes 2-3 minutes)
 4. Your browser will open automatically to `http://localhost:8000`
 
@@ -59,7 +59,7 @@ cd discord-terminator
    ```
 3. Run:
    ```bash
-   ./start.sh
+   ./start_LINUX_MAC.sh
    ```
 4. Open your browser to `http://localhost:8000`
 
@@ -164,16 +164,12 @@ Currently, migrations run in one session. If you need to stop:
 - **Windows/Mac**: Make sure Docker Desktop is running (check system tray)
 - **Linux**: Run `sudo systemctl start docker`
 
-### "Frontend not built" error
+### "Frontend/Backend not installed" error
 Run this in the discord-terminator folder:
 ```bash
-cd web/frontend
-npm install
-npm run build
-cd ../..
+./start_LINUX_MAC.sh
 ```
-
-Then restart the app.
+The script will handle all installations automatically.
 
 ### Browser shows "Can't connect"
 - Make sure the app is running (check the terminal window)

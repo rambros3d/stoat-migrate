@@ -10,7 +10,7 @@ Discord Terminator can now be deployed in **3 simple ways**:
 
 ### Why Docker?
 - ✅ **Easiest** - One command to run everything
-- ✅ **No setup** - No need to install Python, Node.js, etc.
+- ✅ **No setup** - No need to install Node.js, etc.
 - ✅ **Works everywhere** - Windows, Mac, Linux
 - ✅ **Safe** - Isolated from your system
 
@@ -34,7 +34,7 @@ Discord Terminator can now be deployed in **3 simple ways**:
    http://localhost:8000
    ```
 
-**That's it!** No Python, no Node.js, no configuration needed.
+**That's it!** No Node.js or additional configuration needed locally.
 
 ### Documentation for Users:
 - **[NON-TECHNICAL-GUIDE.md](NON-TECHNICAL-GUIDE.md)** - Complete step-by-step guide
@@ -77,22 +77,21 @@ Discord Terminator can now be deployed in **3 simple ways**:
 ## 🥉 METHOD 3: Simple Scripts (For Local Use)
 
 ### Why Scripts?
-- ✅ **No Docker needed** - If you already have Python/Node.js
+- ✅ **No Docker needed** - If you already have Node.js 18+
 - ✅ **Quick** - Just double-click
 - ✅ **Direct** - Easy to modify code
 
 ### For Users:
 
 **Windows:**
-1. Install [Python 3.11+](https://www.python.org/downloads/)
-2. Install [Node.js 18+](https://nodejs.org/)
-3. Double-click `start.bat`
-4. Open `http://localhost:8000`
+1. Install [Node.js 18+](https://nodejs.org/)
+2. Double-click `start_WINDOWS.bat`
+3. Open `http://localhost:8000`
 
 **Mac/Linux:**
-1. Install Python 3.11+ and Node.js 18+
+1. Install [Node.js 18+](https://nodejs.org/)
 2. Open Terminal
-3. Run: `./start.sh`
+3. Run: `./start_LINUX_MAC.sh`
 4. Open `http://localhost:8000`
 
 ### Documentation:
