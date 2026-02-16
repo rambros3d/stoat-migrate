@@ -12,6 +12,18 @@ export class MigrationEngine {
         this.channelMap = {};
         this.messageAuthorCache = {};
         this.avatarCache = {};
+        this.shouldStop = false;
+    }
+
+    stop() {
+        this.shouldStop = true;
+    }
+
+    async checkStop() {
+        if (this.shouldStop) {
+            await this.log('Emergency stop requested. Halting...');
+            throw new Error('TASK_STOPPED_BY_USER');
+        }
     }
 
     async log(message) {
@@ -199,6 +211,7 @@ export class MigrationEngine {
                         .sort((a, b) => a.position - b.position);
 
                     for (const role of sortedRoles) {
+                        await this.checkStop();
                         const nameLower = role.name.toLowerCase();
                         if (existingRoles[nameLower]) {
                             this.roleMap[role.id] = existingRoles[nameLower];
@@ -231,6 +244,7 @@ export class MigrationEngine {
                         .sort((a, b) => a.position - b.position);
 
                     for (const category of categories) {
+                        await this.checkStop();
                         const catChannels = [];
                         const children = Array.from(category.children.cache.values())
                             .sort((a, b) => a.position - b.position);
@@ -335,22 +349,53 @@ export class MigrationEngine {
                     }
 
                     // Fetch messages
-                    const fetchOptions = { limit: 100 };
-                    if (afterId) fetchOptions.after = afterId.toString();
+                    if (afterId) {
+                        // Forward fetch (from afterId to now)
+                        try {
+                            const startingMsg = await channel.messages.fetch(afterId.toString());
+                            messages.push(startingMsg);
+                            await this.log(`Including starting message: ${afterId}`);
+                        } catch {
+                            await this.log(`Starting message ${afterId} not found or inaccessible.`);
+                        }
 
-                    let lastId = afterId?.toString();
-                    while (true) {
-                        const opts = { limit: 100 };
-                        if (lastId) opts.after = lastId;
+                        let lastId = afterId.toString();
+                        while (true) {
+                            await this.checkStop();
+                            const opts = { limit: 100, after: lastId };
+                            const fetched = await channel.messages.fetch(opts);
+                            if (fetched.size === 0) break;
 
-                        const fetched = await channel.messages.fetch(opts);
-                        if (fetched.size === 0) break;
+                            const sorted = Array.from(fetched.values()).sort((a, b) => a.createdTimestamp - b.createdTimestamp);
+                            messages.push(...sorted);
+                            lastId = sorted[sorted.length - 1].id;
 
-                        const sorted = Array.from(fetched.values()).sort((a, b) => a.createdTimestamp - b.createdTimestamp);
-                        messages.push(...sorted);
-                        lastId = sorted[sorted.length - 1].id;
+                            if (fetched.size < 100) break;
+                        }
+                    } else {
+                        // Backward fetch (from now to the beginning)
+                        await this.log('Fetching full history (backward pagination)...');
+                        let lastId = null;
+                        while (true) {
+                            await this.checkStop();
+                            const opts = { limit: 100 };
+                            if (lastId) opts.before = lastId;
 
-                        if (fetched.size < 100) break;
+                            const fetched = await channel.messages.fetch(opts);
+                            if (fetched.size === 0) break;
+
+                            const batch = Array.from(fetched.values());
+                            messages.push(...batch);
+
+                            // Get the oldest message in this batch to continue going backwards
+                            const sortedBatch = batch.sort((a, b) => a.createdTimestamp - b.createdTimestamp);
+                            lastId = sortedBatch[0].id;
+
+                            if (fetched.size < 100) break;
+                            if (messages.length % 500 === 0) {
+                                await this.log(`Discovered ${messages.length} messages so far...`);
+                            }
+                        }
                     }
 
                     await this.log(`Found ${messages.length} messages to migrate.`);
@@ -373,6 +418,7 @@ export class MigrationEngine {
 
                         // Process each thread
                         for (const thread of allThreads) {
+                            await this.checkStop();
                             await this.log(`Processing thread: ${thread.name}`);
                             const threadMessages = [];
 
@@ -438,6 +484,7 @@ export class MigrationEngine {
                     let firstMessageLink = null;
 
                     for (let idx = 0; idx < messages.length; idx++) {
+                        await this.checkStop();
                         const msg = messages[idx];
 
                         if (idx === 0 && msg.url) {

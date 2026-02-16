@@ -26,6 +26,7 @@ app.use(express.json());
 // Store active logs for polling and task state
 const logStreams = {};
 const logBuffers = {}; // Buffer for polling (Vercel support)
+const engineInstances = {}; // Track engine instances for cancellation
 const activeTasks = new Set();
 const MAX_CONCURRENT_TASKS = process.env.MAX_TASKS || 50;
 
@@ -71,6 +72,7 @@ async function runEngineTask(taskType, config, taskId) {
     };
 
     const engine = new MigrationEngine({ dry_run: config.dry_run }, logCallback);
+    engineInstances[taskId] = engine;
 
     try {
         if (taskType === 'clone') {
@@ -96,6 +98,7 @@ async function runEngineTask(taskType, config, taskId) {
         await logCallback('TASK_FAILED');
     } finally {
         activeTasks.delete(taskId);
+        delete engineInstances[taskId];
         // Clean up buffers after 5 minutes
         setTimeout(() => {
             delete logStreams[taskId];
@@ -356,6 +359,18 @@ app.get('/api/logs/:taskId', (req, res) => {
         logs,
         status: activeTasks.has(taskId) ? 'running' : (logBuffers[taskId] ? 'completed' : 'not_found')
     });
+});
+
+app.post('/api/stop/:taskId', async (req, res) => {
+    const { taskId } = req.params;
+    const engine = engineInstances[taskId];
+
+    if (engine) {
+        engine.stop();
+        res.json({ status: 'stopping' });
+    } else {
+        res.status(404).json({ error: 'Task not found or already finished' });
+    }
 });
 
 // Serve static frontend files

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Server, MessageSquare, Terminal, Play, Trash2, Github, Edit3, Hash, CheckCircle2, ChevronRight, ChevronDown } from 'lucide-react';
+import { Shield, Server, MessageSquare, Terminal, Play, Trash2, Github, Edit3, Hash, CheckCircle2, ChevronRight, ChevronDown, AlertOctagon } from 'lucide-react';
 import axios from 'axios';
 
 const App = () => {
@@ -34,6 +34,8 @@ const App = () => {
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [customMessageLink, setCustomMessageLink] = useState('');
     const [messageLinkError, setMessageLinkError] = useState('');
+    const [showStopConfirmation, setShowStopConfirmation] = useState(false);
+    const [isStopping, setIsStopping] = useState(false);
 
     const logEndRef = useRef(null);
 
@@ -228,6 +230,21 @@ const App = () => {
             console.warn('WebSocket error. Starting poll fallback...');
             pollLogs(tid);
         };
+    };
+
+    const handleStop = async () => {
+        if (!taskId) return;
+        setIsStopping(true);
+        try {
+            await axios.post(`/api/stop/${taskId}`);
+            setLogs(prev => [...prev, 'Emergency stop signal sent...']);
+        } catch (err) {
+            console.error('Error stopping task:', err);
+            setLogs(prev => [...prev, `Error stopping task: ${err.message}`]);
+        } finally {
+            setIsStopping(false);
+            setShowStopConfirmation(false);
+        }
     };
 
     const handleRun = async (type) => {
@@ -463,14 +480,25 @@ const App = () => {
                                 </div>
 
                                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px', gap: '12px' }}>
-                                    <button
-                                        className="btn btn-secondary"
-                                        onClick={() => handleRun('clone')}
-                                        disabled={status === 'running' || !serverInfos.discord || !serverInfos.stoat}
-                                        style={{ width: 'auto', padding: '10px 25px', background: '#a29bfe', color: '#fff' }}
-                                    >
-                                        <Server size={18} /> Clone Structure
-                                    </button>
+                                    <div style={{ display: 'flex', gap: '12px', flex: 1 }}>
+                                        <button
+                                            className="btn btn-secondary"
+                                            onClick={() => handleRun('clone')}
+                                            disabled={status === 'running' || !serverInfos.discord || !serverInfos.stoat}
+                                            style={{ flex: 1, padding: '10px 25px', background: status === 'running' ? '#dfe4ea' : '#a29bfe', color: '#fff', marginTop: '10px' }}
+                                        >
+                                            <Server size={18} /> Clone Structure
+                                        </button>
+                                        {status === 'running' && (
+                                            <button
+                                                className="btn"
+                                                style={{ background: '#ff7675', color: '#fff', width: 'auto', padding: '0 20px', marginTop: '10px', height: '48px', display: 'flex', alignItems: 'center', gap: '8px' }}
+                                                onClick={() => setShowStopConfirmation(true)}
+                                            >
+                                                <AlertOctagon size={18} /> STOP
+                                            </button>
+                                        )}
+                                    </div>
                                     <button
                                         className="btn btn-primary"
                                         onClick={() => setActiveTab('migration')}
@@ -544,15 +572,24 @@ const App = () => {
                                     <label style={{ margin: 0, fontSize: '0.85rem' }}>Run a Test without copying</label>
                                 </div>
 
-                                <div style={{ display: 'flex', gap: '15px' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: status === 'running' ? '1fr auto' : '1fr', gap: '15px' }}>
                                     <button
                                         className="btn btn-primary"
-                                        style={{ background: '#00cec9', flex: 1 }}
+                                        style={{ background: status === 'running' ? '#dfe4ea' : '#00cec9', margin: 0 }}
                                         onClick={() => handleRun('migrate')}
                                         disabled={status === 'running' || !config.source_channel_id || !config.target_channel_id}
                                     >
                                         <MessageSquare size={16} /> Start Migration
                                     </button>
+                                    {status === 'running' && (
+                                        <button
+                                            className="btn"
+                                            style={{ background: '#ff7675', color: '#fff', width: 'auto', padding: '0 25px', height: '52px', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', border: 'none' }}
+                                            onClick={() => setShowStopConfirmation(true)}
+                                        >
+                                            <AlertOctagon size={18} /> STOP
+                                        </button>
+                                    )}
                                 </div>
 
                                 {status === 'running' && (
@@ -640,6 +677,28 @@ const App = () => {
                             <div style={{ display: 'flex', gap: '12px' }}>
                                 <button className="btn btn-primary" style={{ background: '#00cec9' }} onClick={() => handleRun('migrate')} disabled={!!messageLinkError}>Confirm & Start</button>
                                 <button className="btn btn-primary" style={{ background: '#eee', color: '#2d3436' }} onClick={() => setShowConfirmation(false)}>Cancel</button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+
+                {showStopConfirmation && (
+                    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, backdropFilter: 'blur(4px)' }}>
+                        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="card glass" style={{ maxWidth: '400px', width: '90%', padding: '30px', boxShadow: '0 20px 40px rgba(255,118,117,0.2)', border: '2px solid #ff7675' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px', color: '#ff7675' }}>
+                                <AlertOctagon size={32} />
+                                <h3 style={{ margin: 0 }}>Emergency Stop</h3>
+                            </div>
+                            <p style={{ color: '#636e72', fontSize: '0.9rem', marginBottom: '30px' }}>
+                                Are you sure you want to halt the migration? This will stop the process immediately. Some messages may have already been copied.
+                            </p>
+                            <div style={{ display: 'flex', gap: '12px' }}>
+                                <button className="btn" style={{ background: '#ff7675', color: '#fff', flex: 1 }} onClick={handleStop} disabled={isStopping}>
+                                    {isStopping ? 'Stopping...' : 'Stop Immediately'}
+                                </button>
+                                <button className="btn" style={{ background: '#eee', color: '#2d3436', flex: 1 }} onClick={() => setShowStopConfirmation(false)} disabled={isStopping}>
+                                    Dismiss
+                                </button>
                             </div>
                         </motion.div>
                     </div>
