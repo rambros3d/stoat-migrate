@@ -5,7 +5,7 @@ echo === 🚀 Discord Terminator Windows Launcher ===
 
 :: Configuration
 set NODE_VERSION=v22.12.0
-set NODE_DIST=node-%NODE_VERSION-win-x64
+set NODE_DIST=node-%NODE_VERSION%-win-x64
 set NODE_URL=https://nodejs.org/dist/%NODE_VERSION%/%NODE_DIST%.zip
 set RUNTIME_DIR=.node_runtime
 
