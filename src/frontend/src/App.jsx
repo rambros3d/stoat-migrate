@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Server, MessageSquare, Terminal, Play, Trash2, Github, Edit3, Hash, CheckCircle2, ChevronRight, ChevronDown, AlertOctagon } from 'lucide-react';
+import { Shield, Server, MessageSquare, Terminal, Play, Trash2, Github, Edit3, Hash, CheckCircle2, ChevronRight, ChevronDown, AlertTriangle, AlertOctagon } from 'lucide-react';
 import axios from 'axios';
 
 const App = () => {
@@ -392,7 +392,17 @@ const App = () => {
 
     return (
         <div className="dashboard-container">
-            <motion.h1 initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="title">Discord Terminator</motion.h1>
+            <motion.h1 initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="title" style={{ marginBottom: '15px' }}>Discord Terminator</motion.h1>
+
+            <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="info-bar"
+            >
+                <AlertTriangle size={24} />
+                <span>This tool is no longer maintained, use the new <a href="https://github.com/rambros3d/fluxer-reaper" target="_blank" rel="noreferrer">Reaper Tool</a></span>
+            </motion.div>
 
             <div className="card glass" style={{ width: '100%', maxWidth: '800px', padding: 0, overflow: 'hidden', marginBottom: '20px' }}>
                 <div style={{ display: 'flex', borderBottom: '1px solid #edf2f7', background: 'rgba(255,255,255,0.5)' }}>

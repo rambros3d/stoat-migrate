@@ -179,3 +179,30 @@ input:focus {
   border-radius: 20px;
   border: 1px solid #dfe4ea;
 }
+
+.info-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(255, 205, 0, 0.1);
+  color: #856404;
+  padding: 16px 32px;
+  border-radius: 16px;
+  border: 2px solid rgba(255, 205, 0, 0.4);
+  margin-bottom: 35px;
+  font-size: 1.15rem;
+  font-weight: 600;
+  box-shadow: 0 6px 16px rgba(255, 205, 0, 0.1);
+}
+
+.info-bar a {
+  color: #856404;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: all 0.2s ease;
+}
+
+.info-bar a:hover {
+  opacity: 0.8;
+}
