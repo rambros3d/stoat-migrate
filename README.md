@@ -8,8 +8,7 @@ You can test the public instance at https://discord-terminator.onrender.com
 A full-stack JavaScript tool to archive and migrate Discord channels to [Stoat](https://stoat.chat).
 
 ## Demo
-<https://raw.githubusercontent.com/rambros3d/discord-terminator/refs/heads/public/discord-terminator-demo.mp4>
-
+https://github.com/user-attachments/assets/a0404a0e-487a-4c62-a123-a6903b3cb22b
 
 ![Discord Terminator Screenshots](discord-terminator-screenshots.jpg)
 
