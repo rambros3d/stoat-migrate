@@ -1,37 +1,38 @@
+## Use the new [Reaper tool](https://github.com/rambros3d/fluxer-reaper); supports Stoat & Fluxer
+
+### This Discord Terminator tool is no longer maintained.
+You can test the public instance at https://discord-terminator.onrender.com
+
 ![Discord Terminator Logo](icon.png)
 
-# Discord Terminator
+A full-stack JavaScript tool to archive and migrate Discord channels to [Stoat](https://stoat.chat).
 
-A powerful, full-stack JavaScript tool to archive and migrate Discord channels to [Revolt](https://revolt.chat) (via Stoat) or view them locally.
+## Demo
+<https://raw.githubusercontent.com/rambros3d/discord-terminator/refs/heads/public/discord-terminator-demo.mp4>
+
+
+![Discord Terminator Screenshots](discord-terminator-screenshots.jpg)
+
+---
 
 ## 🚀 Quick Start
+The github repo can be directly deployed via render.com
 
 ### Linux / macOS
 Run the launcher:
 ```bash
 ./start_LINUX_MAC.sh
 ```
-Or for **Desktop Mode**:
-```bash
-./start_LINUX_MAC.sh --desktop
-```
-
-#### 🐧 Linux Troubleshooting (FUSE error)
-If you get a `libfuse.so.2` error on Ubuntu or Fedora:
-- **Ubuntu/Debian**: `sudo apt install libfuse2`
-- **Fedora**: `sudo dnf install fuse-libs`
-- **Or**: Use the `.deb` or `.rpm` installers from the Releases page.
-
-### Windows
-Double-click `start_WINDOWS.bat` (Coming soon: updated bat script)
 
 ## Features
-- **Archive**: Clone Discord server structure (Roles, Channels, Categories).
-- **Migrate**: Move message history including attachments, embeds, and replies.
-- **Node.js Backend**: Faster, more reliable migration engine using `discord.js`.
+- **Clone Discord Server Structure**: Roles, Channels, Categories.
+- **Migrate Messages**: Move message history including attachments, embeds, and replies.
 - **WebSocket Logs**: Real-time progress tracking in your browser.
 
-## Documentation
-- [Usage Guide](docs/usage.md)
-- [Deployment Info](docs/DEPLOYMENT.md)
-- [Docker Guide](docs/DOCKER.md)
+---
+
+### Vibe Code Notice
+- Code is provided as is; This tool was developed with AI.
+- Take it, use it, modify it, feel free to do whatever you wish.
+
+---
