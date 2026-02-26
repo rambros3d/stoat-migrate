@@ -40,6 +40,7 @@ logs/
 .node_runtime/
 node_modules/
 **/node_modules/
+reference/
 
 # Build & Distribution
 dist_electron/
